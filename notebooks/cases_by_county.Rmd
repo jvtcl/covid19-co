@@ -1,0 +1,292 @@
+---
+title: 'COVID-19 Confirmed Cases by Colorado County'
+author: 'Joseph Tuccillo'
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: pdf_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(fig.path='figs/',
+                      fig.pos='h',
+                      out.extra='',
+                      fig.ext = 'png',
+                      dpi = 320,
+                      retina = 1,
+                      echo=FALSE,
+                      warning=FALSE,
+                      message=FALSE)
+knitr::opts_knit$set(root.dir = '../')
+```
+
+## Daily Cases by Colorado County
+
+```{r}
+# helper functions for computing LQ and rates
+source('code/support_functions.R')
+```
+
+```{r}
+## fetch any new case files
+# will skip download if no new files are available
+source('code/get_new_case_data.R')
+```
+
+```{r}
+# county population (sex by age, aggregates to total county pop)
+co_sxa <- read.csv('data/co_sex_by_age_by_county_acs_2018_5yr.csv',
+                   stringsAsFactors = F) 
+
+# subset the county ID and total population columns
+co_pop <- co_sxa[,c('Geo_NAME', 'ACS18_5yr_B01001001')]
+
+# rename total population column
+names(co_pop)[2] <- 'pop'
+```
+
+
+```{r}
+# some of the earlier dates don't have the ` County` suffix,
+# so remove this from the total population count IDs
+co_pop$Geo_NAME <- gsub(' County', '', co_pop$Geo_NAME)
+```
+
+```{r}
+# all filenames in the `data` folder
+data_files <- list.files('data')
+```
+
+
+```{r}
+# filenames for all covid19 case data files
+covid_sf <- data_files[startsWith(data_files, 'covid19')]
+```
+
+
+```{r}
+## build daily case data
+daily_cases_cty <- lapply(covid_sf, function(covx){
+    
+    # full path to the file
+    path.covx <- file.path('data', covx)
+    
+    # extract date info from filename
+    date.covx <- gsub('covid19_case_summary_', '', covx) # strip prefix
+    date.covx <- gsub('.csv', '', date.covx) # strip file extension
+    
+    # read in file
+    data.covx <- read.csv(path.covx, stringsAsFactors = F)
+    
+    # subset to counties
+    cty.covx <- data.covx[data.covx$description == 'Case Counts by County' & data.covx$metric == 'Cases',] 
+    
+    # append date 
+    cty.covx <- data.frame(date = date.covx, cty.covx, stringsAsFactors = F)
+    
+    # convert date from text to date/time
+    cty.covx$date <- lubridate::date(cty.covx$date)
+    
+    # ensure `value` column is numeric
+    cty.covx$value <- as.numeric(cty.covx$value)
+    
+    # strip `County` prefix if it exists 
+    cty.covx$attribute <- gsub(' County', '', cty.covx$attribute)
+    
+    # append total population counts
+    cty.covx <- merge(cty.covx, co_pop, by.x = 'attribute', by.y = 'Geo_NAME')
+    
+    # append location quotient and case rates
+    cty.covx$lq <- lq(cty.covx)
+    cty.covx$cases_100k <- rate(cty.covx)
+    
+    cty.covx[,c('attribute', 'date', 'value', 'pop', 'lq', 'cases_100k')]
+    
+})
+```
+
+```{r}
+# combine results into a single data frame
+daily_cases_cty <- do.call(rbind, daily_cases_cty)
+```
+
+### Raw Cases per 100,000 People by County
+
+```{r daily-cases-100k, fig.height = 12, fig.width = 12}
+library(ggplot2)
+ggplot(data = daily_cases_cty, aes(x = date, y = cases_100k, color = attribute)) + 
+    geom_line(size = 0.75) +
+    facet_wrap(~attribute) +
+    xlab('Date') +
+    ylab('Cases per 100,000 People') +
+    theme_bw() +
+    theme(axis.text.x = element_text(hjust = 1, angle = 45)) +
+    theme(legend.position = 'none')
+```
+
+### Log-Transformed Cases per 100,000 People by County
+
+```{r daily-cases-100k-log, fig.height = 12, fig.width = 12}
+# with logarithmic y-axis
+ggplot(data = daily_cases_cty, aes(x = date, y = cases_100k, color = attribute)) + 
+    geom_line(size = 0.75) +
+    facet_wrap(~attribute) +
+    scale_y_log10() +
+    xlab('Date') +
+    ylab('Log-Transformed Cases per 100,000 People') +
+    theme_bw() +
+    theme(axis.text.x = element_text(hjust = 1, angle = 45)) +
+    theme(legend.position = 'none')
+```
+
+\newpage
+## County Confirmed Case Trajectories (Experimental)
+
+
+### Methodology
+
+Use Affinity Propagation clustering to group daily reports of confirmed cases by county based on two criteria:
+
+1. The current rate of confirmed cases per 100,000 people.
+2. The change in confirmed cases per 100,000 people since the previous day.
+
+- March 20, 2020 is used as the intial date, since it is the first day at which the change in cases/100k people by county can be measured (3/19/2020 marks the first day in which all counties were reporting).
+
+- From the ensemble of daily clusterings, measure the percentage of days to date that any two counties shared a cluster label.
+
+- Perform a final clustering (also using Affinity Propagation) to group the change trajectories from 3/20/2020 to present.
+
+```{r}
+# convert daily cases back to list format
+daily_cases_split <- split(daily_cases_cty, daily_cases_cty$date)
+```
+
+```{r}
+# build cluster ensemble
+source('code/apcluster_helper.R')
+ens <- sapply(4:length(daily_cases_split), function(i){
+    
+    day1 <- daily_cases_split[[i-1]]
+    day2 <- daily_cases_split[[i]]
+    
+    rate_of_change <- (day2$cases_100k - day1$cases_100k)
+    rate_of_change[is.na(rate_of_change)] <- 0
+    
+    inx <- scale(cbind(rate_of_change, day2$cases_100k))
+    rownames(inx) <- day2$attribute
+    
+    set.seed(909) # so the labels stay consistent
+    apcx <- apcluster(negDistMat(inx))
+    
+    clustx <- clust_vec(apcx)
+    names(clustx) <- rownames(inx)
+    clustx
+    
+})
+```
+
+```{r}
+# convert labels to binary format
+ed <- lapply(1:ncol(ens), function(i){
+    
+    indmat <- model.matrix(~factor(ens[,i])-1)
+    colnames(indmat) <- paste0(paste0('d', i), letters[1:ncol(indmat)])
+    rownames(indmat) <- rownames(ens)
+    as.matrix(vegan::vegdist(indmat, method = 'jaccard'))
+    
+})
+ed <- Reduce(ed, f = '+')
+```
+
+```{r}
+## build similarity matrix 
+# similarity as percentage of times two counties co-clustered
+es <- 1 - ed
+```
+
+```{r}
+set.seed(909)
+apce <- apcluster(es)
+```
+
+
+```{r}
+# load county boundaries
+library(sf)
+counties <- read_sf('data', 'cb_2018_us_county_500k')
+counties <- counties[counties$STATEFP == '08',]
+counties <- counties[match(rownames(es), counties$NAME),]
+```
+
+```{r}
+# assign cluster labels to counties
+counties['cluster'] <- factor(clust_vec(apce))
+```
+
+```{r}
+daily_cases_cty$cluster <- counties$cluster[match(daily_cases_cty$attribute, counties$NAME)]
+```
+
+```{r}
+## labels for overview map
+county_labels <- st_coordinates(st_centroid(counties))
+county_labels <- data.frame(GEOID = counties$NAME, county_labels)
+```
+
+```{r}
+## map plot
+library(shadowtext)
+mapplot <- ggplot() + 
+            geom_sf(data = counties, aes(fill = cluster), size = 0.25) +
+            scale_fill_brewer(type = 'qual', palette = 'Set3') +
+            geom_shadowtext(data = county_labels, aes(x = X, y = Y, label = GEOID), color = 'white', size = 3, fontface = 'bold', stroke = 0.1) +
+            ggtitle(label = 'Colorado COVID-19 Daily Confirmed Case Trajectories',
+                   subtitle = paste0('(', '2020-03-20 - ', (Sys.Date() - 1), ')')) +
+            theme_void() +
+            theme(plot.title = element_text(hjust = 0.5), 
+                  plot.subtitle = element_text(hjust = 0.5), 
+                  legend.position = 'none')
+```
+
+```{r}
+## change trajectories by cluster
+# untransformed y-axis
+trjplot <- ggplot(data = daily_cases_cty[daily_cases_cty$date >= '2020-03-20',],
+                  aes(x = date, y = cases_100k, fill = cluster)) + 
+                geom_smooth(color = 'black', size = 0.25) +
+                scale_fill_brewer(type = 'qual', palette = 'Set3') +
+                facet_wrap(~cluster, scales = 'free_y') +
+                scale_y_log10() +
+                xlab('Date') +
+                ylab('Cases per 100,000 People') +
+                geom_vline(xintercept = 4) +
+                theme_bw() +
+                theme(axis.text.x = element_text(hjust = 1, angle = 45)) +
+                theme(legend.position = 'none')
+```
+
+```{r}
+# with logarithmic y-axis
+trjplot_log <- ggplot(data = daily_cases_cty[daily_cases_cty$date >= '2020-03-20',],
+                  aes(x = date, y = cases_100k, fill = cluster)) + 
+                geom_smooth(color = 'black', size = 0.25) +
+                scale_fill_brewer(type = 'qual', palette = 'Set3') +
+                facet_wrap(~cluster) +
+                scale_y_log10() +
+                xlab('Date') +
+                ylab('Log-Transformed Cases per 100,000 People') +
+                geom_vline(xintercept = 4) +
+                theme_bw() +
+                theme(axis.text.x = element_text(hjust = 1, angle = 45)) +
+                theme(legend.position = 'none')
+```
+
+## Smoothed Raw Cases per 100,000 people by cluster with variable y-axes
+
+```{r county-clusters-smooth-raw, fig.height = 13, fig.width = 8}
+cowplot::plot_grid(mapplot, trjplot, ncol = 1)
+```
+
+## Smoothed Log-transformed Cases per 100,000 people by cluster with fixed y-axes
+
+```{r county-clusters-smooth-log, fig.height = 13, fig.width = 8}
+cowplot::plot_grid(mapplot, trjplot_log, ncol = 1)
+```
