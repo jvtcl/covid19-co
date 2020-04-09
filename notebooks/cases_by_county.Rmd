@@ -10,6 +10,7 @@ knitr::opts_chunk$set(fig.path='figs/',
                       fig.pos='h',
                       # out.extra='',
                       fig.ext = 'pdf',
+                      # fig.ext = 'png',
                       # dpi = 320,
                       echo=FALSE,
                       warning=FALSE,
@@ -109,7 +110,7 @@ daily_cases_cty <- do.call(rbind, daily_cases_cty)
 
 ### Raw Cases per 100,000 People by County
 
-```{r daily-cases-100k, fig.height = 12, fig.width = 12}
+```{r daily-cases-100k, fig.height = 12, fig.width = 12, dpi = 320}
 library(ggplot2)
 ggplot(data = daily_cases_cty, aes(x = date, y = cases_100k, color = attribute)) + 
     geom_line(size = 0.75) +
