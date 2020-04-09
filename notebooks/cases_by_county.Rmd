@@ -8,10 +8,9 @@ output: pdf_document
 ```{r setup}
 knitr::opts_chunk$set(fig.path='figs/',
                       fig.pos='h',
-                      out.extra='',
-                      fig.ext = 'png',
-                      dpi = 320,
-                      retina = 1,
+                      # out.extra='',
+                      fig.ext = 'pdf',
+                      # dpi = 320,
                       echo=FALSE,
                       warning=FALSE,
                       message=FALSE)

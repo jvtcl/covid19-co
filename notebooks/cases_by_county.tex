@@ -137,10 +137,9 @@
 \begin{Highlighting}[]
 \NormalTok{knitr}\OperatorTok{::}\NormalTok{opts_chunk}\OperatorTok{$}\KeywordTok{set}\NormalTok{(}\DataTypeTok{fig.path=}\StringTok{'figs/'}\NormalTok{,}
                       \DataTypeTok{fig.pos=}\StringTok{'h'}\NormalTok{,}
-                      \DataTypeTok{out.extra=}\StringTok{''}\NormalTok{,}
-                      \DataTypeTok{fig.ext =} \StringTok{'png'}\NormalTok{,}
-                      \DataTypeTok{dpi =} \DecValTok{320}\NormalTok{,}
-                      \DataTypeTok{retina =} \DecValTok{1}\NormalTok{,}
+                      \CommentTok{# out.extra='',}
+                      \DataTypeTok{fig.ext =} \StringTok{'pdf'}\NormalTok{,}
+                      \CommentTok{# dpi = 320,}
                       \DataTypeTok{echo=}\OtherTok{FALSE}\NormalTok{,}
                       \DataTypeTok{warning=}\OtherTok{FALSE}\NormalTok{,}
                       \DataTypeTok{message=}\OtherTok{FALSE}\NormalTok{)}
@@ -164,13 +163,13 @@ County}\label{daily-cases-by-colorado-county}}
 \subsubsection{Raw Cases per 100,000 People by
 County}\label{raw-cases-per-100000-people-by-county}}
 
-\includegraphics{figs/daily-cases-100k-1}
+\includegraphics{figs/daily-cases-100k-1.pdf}
 
 \hypertarget{log-transformed-cases-per-100000-people-by-county}{%
 \subsubsection{Log-Transformed Cases per 100,000 People by
 County}\label{log-transformed-cases-per-100000-people-by-county}}
 
-\includegraphics{figs/daily-cases-100k-log-1}
+\includegraphics{figs/daily-cases-100k-log-1.pdf}
 
 \newpage
 
@@ -212,13 +211,13 @@ cases by county based on two criteria:
 variable
 y-axes}\label{smoothed-raw-cases-per-100000-people-by-cluster-with-variable-y-axes}}
 
-\includegraphics{figs/county-clusters-smooth-raw-1}
+\includegraphics{figs/county-clusters-smooth-raw-1.pdf}
 
 \hypertarget{smoothed-log-transformed-cases-per-100000-people-by-cluster-with-fixed-y-axes}{%
 \subsection{Smoothed Log-transformed Cases per 100,000 people by cluster
 with fixed
 y-axes}\label{smoothed-log-transformed-cases-per-100000-people-by-cluster-with-fixed-y-axes}}
 
-\includegraphics{figs/county-clusters-smooth-log-1}
+\includegraphics{figs/county-clusters-smooth-log-1.pdf}
 
 \end{document}
