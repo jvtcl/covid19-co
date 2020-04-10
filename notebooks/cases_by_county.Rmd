@@ -167,8 +167,10 @@ ens <- sapply(4:length(daily_cases_split), function(i){
     day1 <- daily_cases_split[[i-1]]
     day2 <- daily_cases_split[[i]]
     
+    # lagged rate of change
     rate_of_change <- (day2$cases_100k - day1$cases_100k)
-    rate_of_change[is.na(rate_of_change)] <- 0
+    # rate_of_change <- rate_of_change / day1$cases_100k # change proportional to day1 cases
+    rate_of_change[is.na(rate_of_change)] <- 0 # occurs when d1: 0 cases/100k to d2: 0 cases/100k
     
     inx <- scale(cbind(rate_of_change, day2$cases_100k))
     rownames(inx) <- day2$attribute
@@ -203,7 +205,7 @@ es <- 1 - ed
 ```
 
 ```{r}
-set.seed(909)
+set.seed(909) # so the labels stay consistent
 apce <- apcluster(es)
 ```
 
@@ -250,42 +252,47 @@ mapplot <- ggplot() +
 ## change trajectories by cluster
 # untransformed y-axis
 trjplot <- ggplot(data = daily_cases_cty[daily_cases_cty$date >= '2020-03-20',],
-                  aes(x = date, y = cases_100k, fill = cluster)) + 
-                geom_smooth(color = 'black', size = 0.25) +
-                scale_fill_brewer(type = 'qual', palette = 'Set3') +
-                facet_wrap(~cluster, scales = 'free_y') +
-                scale_y_log10() +
-                xlab('Date') +
-                ylab('Cases per 100,000 People') +
-                geom_vline(xintercept = 4) +
-                theme_bw() +
-                theme(axis.text.x = element_text(hjust = 1, angle = 45)) +
-                theme(legend.position = 'none')
+            aes(x = date, y = cases_100k, color = cluster, group = attribute)) + 
+          geom_line(size = 0.75) +
+          scale_color_brewer(type = 'qual', palette = 'Set3') +
+          geom_smooth(data = daily_cases_cty[daily_cases_cty$date >= '2020-03-20',],
+                      aes(x = date, y = cases_100k), inherit.aes = F, color = 'black', fill = NA,   
+                      linetype = 'dashed', size = 0.5) + 
+          facet_wrap(~cluster) +
+          xlab('Date') +
+          ylab('Cases per 100,000 People') +
+          geom_vline(xintercept = 4) +
+          theme_bw() +
+          theme(axis.text.x = element_text(hjust = 1, angle = 45)) +
+          theme(legend.position = 'none')
 ```
 
 ```{r}
 # with logarithmic y-axis
 trjplot_log <- ggplot(data = daily_cases_cty[daily_cases_cty$date >= '2020-03-20',],
-                  aes(x = date, y = cases_100k, fill = cluster)) + 
-                geom_smooth(color = 'black', size = 0.25) +
-                scale_fill_brewer(type = 'qual', palette = 'Set3') +
-                facet_wrap(~cluster) +
-                scale_y_log10() +
-                xlab('Date') +
-                ylab('Log-Transformed Cases per 100,000 People') +
-                geom_vline(xintercept = 4) +
-                theme_bw() +
-                theme(axis.text.x = element_text(hjust = 1, angle = 45)) +
-                theme(legend.position = 'none')
+               aes(x = date, y = cases_100k, color = cluster, group = attribute)) + 
+          geom_line(size = 0.75) +
+          scale_color_brewer(type = 'qual', palette = 'Set3') +
+          geom_smooth(data = daily_cases_cty[daily_cases_cty$date >= '2020-03-20',],
+                      aes(x = date, y = cases_100k), inherit.aes = F, color = 'black', fill = NA,  
+                      linetype = 'dashed', size = 0.5) + 
+          facet_wrap(~cluster) +
+          scale_y_log10() +
+          xlab('Date') +
+          ylab('Log-Transformed Cases per 100,000 People') +
+          geom_vline(xintercept = 4) +
+          theme_bw() +
+          theme(axis.text.x = element_text(hjust = 1, angle = 45)) +
+          theme(legend.position = 'none')
 ```
 
-## Smoothed Raw Cases per 100,000 people by cluster with variable y-axes
+## Raw Cases per 100,000 people by cluster
 
 ```{r county-clusters-smooth-raw, fig.height = 13, fig.width = 8}
 cowplot::plot_grid(mapplot, trjplot, ncol = 1)
 ```
 
-## Smoothed Log-transformed Cases per 100,000 people by cluster with fixed y-axes
+## Log-transformed Cases per 100,000 people by cluster
 
 ```{r county-clusters-smooth-log, fig.height = 13, fig.width = 8}
 cowplot::plot_grid(mapplot, trjplot_log, ncol = 1)
