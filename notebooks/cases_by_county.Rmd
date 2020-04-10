@@ -112,7 +112,7 @@ daily_cases_cty <- do.call(rbind, daily_cases_cty)
 
 ```{r daily-cases-100k, fig.height = 12, fig.width = 12, dpi = 320}
 library(ggplot2)
-ggplot(data = daily_cases_cty, aes(x = date, y = cases_100k, color = attribute)) + 
+trjplt1 <- ggplot(data = daily_cases_cty, aes(x = date, y = cases_100k, color = attribute)) + 
     geom_line(size = 0.75) +
     facet_wrap(~attribute) +
     xlab('Date') +
@@ -120,13 +120,14 @@ ggplot(data = daily_cases_cty, aes(x = date, y = cases_100k, color = attribute))
     theme_bw() +
     theme(axis.text.x = element_text(hjust = 1, angle = 45)) +
     theme(legend.position = 'none')
+trjplt1
 ```
 
 ### Log-Transformed Cases per 100,000 People by County
 
 ```{r daily-cases-100k-log, fig.height = 12, fig.width = 12}
 # with logarithmic y-axis
-ggplot(data = daily_cases_cty, aes(x = date, y = cases_100k, color = attribute)) + 
+trjplt2 <- ggplot(data = daily_cases_cty, aes(x = date, y = cases_100k, color = attribute)) + 
     geom_line(size = 0.75) +
     facet_wrap(~attribute) +
     scale_y_log10() +
@@ -135,7 +136,15 @@ ggplot(data = daily_cases_cty, aes(x = date, y = cases_100k, color = attribute))
     theme_bw() +
     theme(axis.text.x = element_text(hjust = 1, angle = 45)) +
     theme(legend.position = 'none')
+trjplt2
 ```
+
+```{r}
+## write output images
+ggsave(plot = trjplt1, filename = 'daily-cases-raw.png', path = 'figs/', device = 'png', dpi = 320, width = 12, height = 12, units = 'in')
+ggsave(plot = trjplt2, filename = 'daily-cases-log.png', path = 'figs/', device = 'png', dpi = 320, width = 12, height = 12, units = 'in')
+```
+
 
 \newpage
 ## County Confirmed Case Trajectories (Experimental)
@@ -289,15 +298,15 @@ trjplot_log <- ggplot(data = daily_cases_cty[daily_cases_cty$date >= '2020-03-20
 ### Raw Cases per 100,000 people by cluster
 
 ```{r county-clusters-raw, fig.height = 13, fig.width = 8}
-trjplt1 <- cowplot::plot_grid(mapplot, trjplot, ncol = 1)
-trjplt1
-ggsave(filename = 'county-clusters-raw', path = 'figs/', device = 'png', dpi = 320, width = 8, height = 13, units = 'in')
+clsplt1 <- cowplot::plot_grid(mapplot, trjplot, ncol = 1)
+clsplt1
+ggsave(filename = 'county-clusters-raw.png', path = 'figs/', device = 'png', dpi = 320, width = 8, height = 13, units = 'in')
 ```
 
 ### Log-transformed Cases per 100,000 people by cluster
 
 ```{r county-clusters--log, fig.height = 13, fig.width = 8}
-trjplt2 <- cowplot::plot_grid(mapplot, trjplot_log, ncol = 1)
-trjplt2
-ggsave(filename = 'county-clusters-log', path = 'figs/', device = 'png', dpi = 320, width = 8, height = 13, units = 'in')
+clsplt2 <- cowplot::plot_grid(mapplot, trjplot_log, ncol = 1)
+clsplt2
+ggsave(filename = 'county-clusters-log.png', path = 'figs/', device = 'png', dpi = 320, width = 8, height = 13, units = 'in')
 ```
