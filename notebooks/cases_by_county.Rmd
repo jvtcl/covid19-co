@@ -1,11 +1,11 @@
 ---
 title: 'COVID-19 Confirmed Cases by Colorado County'
-author: 'Joseph Tuccillo'
+author: 'Joseph Tuccillo, University of Colorado-Boulder Department of Geography'
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: pdf_document
 ---
 
-```{r setup}
+```{r setup, include = F}
 knitr::opts_chunk$set(fig.path='figs/',
                       fig.pos='h',
                       # out.extra='',
@@ -25,7 +25,7 @@ knitr::opts_knit$set(root.dir = '../')
 source('code/support_functions.R')
 ```
 
-```{r}
+```{r, message = F, warning = F}
 ## fetch any new case files
 # will skip download if no new files are available
 source('code/get_new_case_data.R')
@@ -286,14 +286,18 @@ trjplot_log <- ggplot(data = daily_cases_cty[daily_cases_cty$date >= '2020-03-20
           theme(legend.position = 'none')
 ```
 
-## Raw Cases per 100,000 people by cluster
+### Raw Cases per 100,000 people by cluster
 
-```{r county-clusters-smooth-raw, fig.height = 13, fig.width = 8}
-cowplot::plot_grid(mapplot, trjplot, ncol = 1)
+```{r county-clusters-raw, fig.height = 13, fig.width = 8}
+trjplt1 <- cowplot::plot_grid(mapplot, trjplot, ncol = 1)
+trjplt1
+ggsave(filename = 'county-clusters-raw', path = 'figs/', device = 'png', dpi = 320, width = 8, height = 13, units = 'in')
 ```
 
-## Log-transformed Cases per 100,000 people by cluster
+### Log-transformed Cases per 100,000 people by cluster
 
-```{r county-clusters-smooth-log, fig.height = 13, fig.width = 8}
-cowplot::plot_grid(mapplot, trjplot_log, ncol = 1)
+```{r county-clusters--log, fig.height = 13, fig.width = 8}
+trjplt2 <- cowplot::plot_grid(mapplot, trjplot_log, ncol = 1)
+trjplt2
+ggsave(filename = 'county-clusters-log', path = 'figs/', device = 'png', dpi = 320, width = 8, height = 13, units = 'in')
 ```
