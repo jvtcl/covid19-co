@@ -1,0 +1,167 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
+\hypersetup{
+            pdftitle={COVID-19 Confirmed Cases by Colorado County},
+            pdfauthor={Joseph Tuccillo, University of Colorado-Boulder Department of Geography},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+% https://github.com/rstudio/rmarkdown/issues/337
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+% https://github.com/rstudio/rmarkdown/pull/252
+\usepackage{titling}
+\setlength{\droptitle}{-2em}
+
+\pretitle{\vspace{\droptitle}\centering\huge}
+\posttitle{\par}
+
+\preauthor{\centering\large\emph}
+\postauthor{\par}
+
+\predate{\centering\large\emph}
+\postdate{\par}
+
+\title{COVID-19 Confirmed Cases by Colorado County}
+\author{Joseph Tuccillo, University of Colorado-Boulder Department of Geography}
+\date{10 April, 2020}
+
+\begin{document}
+\maketitle
+
+\hypertarget{daily-cases-by-colorado-county}{%
+\subsection{Daily Cases by Colorado
+County}\label{daily-cases-by-colorado-county}}
+
+\begin{verbatim}
+## Using an auto-discovered, cached token.
+## To suppress this message, modify your code or options to clearly consent to the use of a cached token.
+## See gargle's "Non-interactive auth" vignette for more details:
+## https://gargle.r-lib.org/articles/non-interactive-auth.html
+## The googledrive package is using a cached token for jotu9073@colorado.edu.
+\end{verbatim}
+
+\hypertarget{raw-cases-per-100000-people-by-county}{%
+\subsubsection{Raw Cases per 100,000 People by
+County}\label{raw-cases-per-100000-people-by-county}}
+
+\includegraphics{figs/daily-cases-100k-1.pdf}
+
+\hypertarget{log-transformed-cases-per-100000-people-by-county}{%
+\subsubsection{Log-Transformed Cases per 100,000 People by
+County}\label{log-transformed-cases-per-100000-people-by-county}}
+
+\includegraphics{figs/daily-cases-100k-log-1.pdf}
+
+\newpage
+
+\hypertarget{county-confirmed-case-trajectories-experimental}{%
+\subsection{County Confirmed Case Trajectories
+(Experimental)}\label{county-confirmed-case-trajectories-experimental}}
+
+\hypertarget{methodology}{%
+\subsubsection{Methodology}\label{methodology}}
+
+Use Affinity Propagation clustering to group daily reports of confirmed
+cases by county based on two criteria:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  The current rate of confirmed cases per 100,000 people.
+\item
+  The change in confirmed cases per 100,000 people since the previous
+  day.
+\end{enumerate}
+
+\begin{itemize}
+\item
+  March 20, 2020 is used as the intial date, since it is the first day
+  at which the change in cases/100k people by county can be measured
+  (3/19/2020 marks the first day in which all counties were reporting).
+\item
+  From the ensemble of daily clusterings, measure the percentage of days
+  to date that any two counties shared a cluster label.
+\item
+  Perform a final clustering (also using Affinity Propagation) to group
+  the change trajectories from 3/20/2020 to present.
+\end{itemize}
+
+\hypertarget{raw-cases-per-100000-people-by-cluster}{%
+\subsubsection{Raw Cases per 100,000 people by
+cluster}\label{raw-cases-per-100000-people-by-cluster}}
+
+\includegraphics{figs/county-clusters-raw-1.pdf}
+
+\hypertarget{log-transformed-cases-per-100000-people-by-cluster}{%
+\subsubsection{Log-transformed Cases per 100,000 people by
+cluster}\label{log-transformed-cases-per-100000-people-by-cluster}}
+
+\includegraphics{figs/county-clusters--log-1.pdf}
+
+\end{document}
