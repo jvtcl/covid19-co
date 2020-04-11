@@ -25,9 +25,10 @@ knitr::opts_knit$set(root.dir = '../')
 source('code/support_functions.R')
 ```
 
-```{r}
+```{r eval = F}
 ## fetch any new case files
 # will skip download if no new files are available
+## THIS IS SKIPPED -- all CSV files are now treated as legacy data!
 source('code/get_new_case_data.R')
 ```
 
@@ -52,15 +53,14 @@ co_pop$Geo_NAME <- gsub(' County', '', co_pop$Geo_NAME)
 
 ```{r}
 # all filenames in the `data` folder
+# legacy files (CSV from google drive)
 data_files <- list.files('data')
 ```
 
-
 ```{r}
-# filenames for all covid19 case data files
+# filenames for all (legacy) covid19 case data files
 covid_sf <- data_files[startsWith(data_files, 'covid19')]
 ```
-
 
 ```{r}
 ## build daily case data
@@ -95,10 +95,14 @@ daily_cases_cty <- lapply(covid_sf, function(covx){
     cty.covx <- merge(cty.covx, co_pop, by.x = 'attribute', by.y = 'Geo_NAME')
     
     # append location quotient and case rates
-    cty.covx$lq <- lq(cty.covx)
+    # cty.covx$lq <- lq(cty.covx)
     cty.covx$cases_100k <- rate(cty.covx)
     
-    cty.covx[,c('attribute', 'date', 'value', 'pop', 'lq', 'cases_100k')]
+    # ensure county names in alphabetical order
+    cty.covx <- cty.covx[match(sort(cty.covx$attribute), cty.covx$attribute),]
+    
+    # cty.covx[,c('attribute', 'date', 'value', 'pop', 'lq', 'cases_100k')]
+    cty.covx[,c('attribute', 'date', 'value', 'pop', 'cases_100k')]
     
 })
 ```
@@ -106,6 +110,37 @@ daily_cases_cty <- lapply(covid_sf, function(covx){
 ```{r}
 # combine results into a single data frame
 daily_cases_cty <- do.call(rbind, daily_cases_cty)
+```
+
+```{r}
+## Read in the newly published case data file (geojson)
+cases_new <- rgdal::readOGR('https://opendata.arcgis.com/datasets/fbae539746324ca69ff34f086286845b_0.geojson')
+```
+
+```{r}
+## append new case data
+cases_new <- with(cases_new@data, 
+                  data.frame(
+                      attribute = LABEL,
+                      date = Sys.Date() - 1, 
+                      value = County_Pos_Cases,
+                      pop = County_Population,
+                      stringsAsFactors = F
+                  ))
+```
+
+```{r}
+## compute cases/100k
+cases_new$cases_100k <- rate(cases_new)
+```
+
+```{r}
+# ensure county names are in alphabetical order (like legacy data)
+cases_new <- cases_new[match(unique(daily_cases_cty$attribute), cases_new$attribute),]
+```
+
+```{r}
+daily_cases_cty <- rbind(daily_cases_cty, cases_new)
 ```
 
 ```{r}
