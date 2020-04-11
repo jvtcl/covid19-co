@@ -25,7 +25,7 @@ knitr::opts_knit$set(root.dir = '../')
 source('code/support_functions.R')
 ```
 
-```{r, message = F, warning = F}
+```{r}
 ## fetch any new case files
 # will skip download if no new files are available
 source('code/get_new_case_data.R')
@@ -108,11 +108,17 @@ daily_cases_cty <- lapply(covid_sf, function(covx){
 daily_cases_cty <- do.call(rbind, daily_cases_cty)
 ```
 
+```{r}
+## limit to nonzero cases/100k
+daily_cases_cty_viz <- daily_cases_cty[daily_cases_cty$cases_100k > 0,]
+```
+
+
 ### Raw Cases per 100,000 People by County
 
 ```{r daily-cases-100k, fig.height = 12, fig.width = 12, dpi = 320}
 library(ggplot2)
-trjplt1 <- ggplot(data = daily_cases_cty, aes(x = date, y = cases_100k, color = attribute)) + 
+trjplt1 <- ggplot(data = daily_cases_cty_viz, aes(x = date, y = cases_100k, color = attribute)) + 
     geom_line(size = 0.75) +
     facet_wrap(~attribute) +
     xlab('Date') +
@@ -127,7 +133,7 @@ trjplt1
 
 ```{r daily-cases-100k-log, fig.height = 12, fig.width = 12}
 # with logarithmic y-axis
-trjplt2 <- ggplot(data = daily_cases_cty, aes(x = date, y = cases_100k, color = attribute)) + 
+trjplt2 <- ggplot(data = daily_cases_cty_viz, aes(x = date, y = cases_100k, color = attribute)) + 
     geom_line(size = 0.75) +
     facet_wrap(~attribute) +
     scale_y_log10() +
@@ -169,6 +175,12 @@ daily_cases_split <- split(daily_cases_cty, daily_cases_cty$date)
 ```
 
 ```{r}
+current_cases <- daily_cases_split[[length(daily_cases_split)]]
+excl <- current_cases$attribute[current_cases$cases_100k == 0]
+```
+
+
+```{r}
 # build cluster ensemble
 source('code/apcluster_helper.R')
 ens <- sapply(4:length(daily_cases_split), function(i){
@@ -183,6 +195,9 @@ ens <- sapply(4:length(daily_cases_split), function(i){
     
     inx <- scale(cbind(rate_of_change, day2$cases_100k))
     rownames(inx) <- day2$attribute
+    
+    # exclude current zero cases
+    inx <- inx[!rownames(inx) %in% excl,]
     
     set.seed(909) # so the labels stay consistent
     apcx <- apcluster(negDistMat(inx))
@@ -205,6 +220,7 @@ ed <- lapply(1:ncol(ens), function(i){
     
 })
 ed <- Reduce(ed, f = '+')
+ed <- ed / length(daily_cases_split)
 ```
 
 ```{r}
@@ -218,22 +234,32 @@ set.seed(909) # so the labels stay consistent
 apce <- apcluster(es)
 ```
 
+```{r}
+## cluster labels
+clust <- clust_vec(apce)
+clust <- sprintf('%02d', clust)
+names(clust) <- rownames(es)
+excl.pad <- rep('No Confirmed Cases', length(excl))
+names(excl.pad) <- excl
+clust <- c(clust, excl.pad)
+```
 
 ```{r}
 # load county boundaries
 library(sf)
 counties <- read_sf('data', 'cb_2018_us_county_500k')
 counties <- counties[counties$STATEFP == '08',]
-counties <- counties[match(rownames(es), counties$NAME),]
+counties <- counties[match(names(clust), counties$NAME),]
 ```
 
 ```{r}
 # assign cluster labels to counties
-counties['cluster'] <- factor(clust_vec(apce))
+counties['cluster'] <- factor(clust)
 ```
 
 ```{r}
 daily_cases_cty$cluster <- counties$cluster[match(daily_cases_cty$attribute, counties$NAME)]
+daily_cases_cty_viz$cluster <- counties$cluster[match(daily_cases_cty_viz$attribute, counties$NAME)]
 ```
 
 ```{r}
@@ -243,11 +269,19 @@ county_labels <- data.frame(GEOID = counties$NAME, county_labels)
 ```
 
 ```{r}
+## color pallette
+library(RColorBrewer)
+pal <- c(brewer.pal(length(unique(clust[clust != 'No Confirmed Cases'])), 'Set3'), 'snow')
+```
+
+
+```{r}
 ## map plot
 library(shadowtext)
 mapplot <- ggplot() + 
             geom_sf(data = counties, aes(fill = cluster), size = 0.25) +
-            scale_fill_brewer(type = 'qual', palette = 'Set3') +
+            # scale_fill_brewer(type = 'qual', palette = 'Set3') +
+            scale_fill_manual(values = pal) +
             geom_shadowtext(data = county_labels, aes(x = X, y = Y, label = GEOID), color = 'white', size = 3, fontface = 'bold', stroke = 0.1) +
             ggtitle(label = 'Colorado COVID-19 Daily Confirmed Case Trajectories',
                    subtitle = paste0('(', '2020-03-20 - ', (Sys.Date() - 1), ')')) +
@@ -260,11 +294,12 @@ mapplot <- ggplot() +
 ```{r}
 ## change trajectories by cluster
 # untransformed y-axis
-trjplot <- ggplot(data = daily_cases_cty[daily_cases_cty$date >= '2020-03-20',],
+trjplot <- ggplot(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= '2020-03-20',],
             aes(x = date, y = cases_100k, color = cluster, group = attribute)) + 
           geom_line(size = 0.75) +
-          scale_color_brewer(type = 'qual', palette = 'Set3') +
-          geom_smooth(data = daily_cases_cty[daily_cases_cty$date >= '2020-03-20',],
+          # scale_color_brewer(type = 'qual', palette = 'Set3') +
+          scale_color_manual(values = pal) +
+          geom_smooth(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= '2020-03-20',],
                       aes(x = date, y = cases_100k), inherit.aes = F, color = 'black', fill = NA,   
                       linetype = 'dashed', size = 0.5) + 
           facet_wrap(~cluster) +
@@ -278,11 +313,12 @@ trjplot <- ggplot(data = daily_cases_cty[daily_cases_cty$date >= '2020-03-20',],
 
 ```{r}
 # with logarithmic y-axis
-trjplot_log <- ggplot(data = daily_cases_cty[daily_cases_cty$date >= '2020-03-20',],
+trjplot_log <- ggplot(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= '2020-03-20',],
                aes(x = date, y = cases_100k, color = cluster, group = attribute)) + 
           geom_line(size = 0.75) +
-          scale_color_brewer(type = 'qual', palette = 'Set3') +
-          geom_smooth(data = daily_cases_cty[daily_cases_cty$date >= '2020-03-20',],
+          # scale_color_brewer(type = 'qual', palette = 'Set3') +
+          scale_color_manual(values = pal) +
+          geom_smooth(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= '2020-03-20',],
                       aes(x = date, y = cases_100k), inherit.aes = F, color = 'black', fill = NA,  
                       linetype = 'dashed', size = 0.5) + 
           facet_wrap(~cluster) +
