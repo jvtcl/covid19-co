@@ -21,7 +21,7 @@ jobs:
       - run:
           name: Push updates
           command: |
-            # git status
-            # git add --all
-            # git commit -m 'test update'
-            git push
+            git status
+            git add --all
+            git commit -m 'test update'
+            git push --set-upstream origin circleci-project-setup
