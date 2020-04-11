@@ -40,6 +40,11 @@ workflows:
   daily:
     triggers:
       - schedule:
-          cron: "51 21 * * *"
+          cron: 05 22 * * *"
+      - filters:
+          branches:
+            only:
+              - master
+              - circleci-project-setup
     jobs:
       - build
