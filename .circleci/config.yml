@@ -10,3 +10,18 @@ jobs:
           name: test
           command: |
             echo "hello world"
+      - run:
+          name: Get latest commit
+          command: |
+            git clone --depth 1 https://$(JOE_GITHUB_TOKEN)@github.com/jvtcl/covid19-co -b circleci-project-setup
+            cd covid19-co
+            mkdir temp
+            cd temp
+            push test.txt
+      - run:
+          name: Push updates
+          command: |
+            git status
+            git add --all
+            git commit -m 'test update'
+            git push
