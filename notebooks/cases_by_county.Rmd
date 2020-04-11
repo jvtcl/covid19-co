@@ -32,7 +32,8 @@ source('code/support_functions.R')
 source('code/get_new_case_data.R')
 ```
 
-```{r}
+```{r, eval = F}
+# THIS IS SKIPPED
 # county population (sex by age, aggregates to total county pop)
 co_sxa <- read.csv('data/co_sex_by_age_by_county_acs_2018_5yr.csv',
                    stringsAsFactors = F) 
@@ -45,7 +46,7 @@ names(co_pop)[2] <- 'pop'
 ```
 
 
-```{r}
+```{r eval = F}
 # some of the earlier dates don't have the ` County` suffix,
 # so remove this from the total population count IDs
 co_pop$Geo_NAME <- gsub(' County', '', co_pop$Geo_NAME)
@@ -91,18 +92,19 @@ daily_cases_cty <- lapply(covid_sf, function(covx){
     # strip `County` prefix if it exists 
     cty.covx$attribute <- gsub(' County', '', cty.covx$attribute)
     
-    # append total population counts
-    cty.covx <- merge(cty.covx, co_pop, by.x = 'attribute', by.y = 'Geo_NAME')
+    # # append total population counts
+    # cty.covx <- merge(cty.covx, co_pop, by.x = 'attribute', by.y = 'Geo_NAME')
     
-    # append location quotient and case rates
-    # cty.covx$lq <- lq(cty.covx)
-    cty.covx$cases_100k <- rate(cty.covx)
-    
+    # # append location quotient and case rates
+    # # cty.covx$lq <- lq(cty.covx)
+    # cty.covx$cases_100k <- rate(cty.covx)
+    # 
     # ensure county names in alphabetical order
     cty.covx <- cty.covx[match(sort(cty.covx$attribute), cty.covx$attribute),]
     
     # cty.covx[,c('attribute', 'date', 'value', 'pop', 'lq', 'cases_100k')]
-    cty.covx[,c('attribute', 'date', 'value', 'pop', 'cases_100k')]
+    # cty.covx[,c('attribute', 'date', 'value', 'pop', 'cases_100k')]
+    cty.covx[,c('attribute', 'date', 'value')]
     
 })
 ```
@@ -129,8 +131,9 @@ cases_new <- with(cases_new@data,
                   ))
 ```
 
-```{r}
+```{r, eval = F}
 ## compute cases/100k
+## THIS IS SKIPPED
 cases_new$cases_100k <- rate(cases_new)
 ```
 
@@ -140,11 +143,32 @@ cases_new <- cases_new[match(unique(daily_cases_cty$attribute), cases_new$attrib
 ```
 
 ```{r}
+## append pop counts to `daily_cases_cty` from `cases_new`
+daily_cases_cty$pop <- cases_new$pop[match(daily_cases_cty$attribute, cases_new$attribute)]
+```
+
+```{r}
+## append `cases_new` to `daily_cases_cty`
 daily_cases_cty <- rbind(daily_cases_cty, cases_new)
 ```
 
 ```{r}
-## limit to nonzero cases/100k
+## remove NA cases (from "unknown" or "pending" counties)
+daily_cases_cty <- daily_cases_cty[complete.cases(daily_cases_cty),]
+```
+
+```{r eval = F}
+# sanity check - should display 64 counties per day when run (starting at 3/19)
+lapply(split(daily_cases_cty, daily_cases_cty$date), nrow)
+```
+
+```{r}
+## compute cases per 100k
+daily_cases_cty$cases_100k <- rate(daily_cases_cty)
+```
+
+```{r}
+## limit to nonzero cases/100k (for visualizations only)
 daily_cases_cty_viz <- daily_cases_cty[daily_cases_cty$cases_100k > 0,]
 ```
 
