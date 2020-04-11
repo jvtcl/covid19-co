@@ -19,10 +19,15 @@ jobs:
             cd temp
             touch test.txt
       - run:
+          name: test
+          command: |
+            pwd
+            ls
+      - run:
           name: Push updates
           working_directory: ~/covid19-co
           command: |
-            git status
-            git add --all
-            git commit -m 'test update'
-            git push
+            # git status
+            # git add --all
+            # git commit -m 'test update'
+            # git push
