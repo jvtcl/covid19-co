@@ -12,6 +12,12 @@ jobs:
             git config --global user.email "joseph.tuccillo@colorado.edu"
             git config --global user.name "jvtcl"
       - run:
+          name: update cases by county
+          working_directory: notebooks
+          command: |
+            R --silent -e "knitr::knit('cases_by_county.Rmd')"
+            
+      - run:
           name: Push updates
           command: |
             git status
@@ -30,6 +36,5 @@ workflows:
             branches:
               only:
                 - master
-                - circleci-project-setup
     jobs:
       - build
