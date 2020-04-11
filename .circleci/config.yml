@@ -7,18 +7,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Get latest commit
-          command: |
-            # git clone --depth 1 https://${JOE_GITHUB_TOKEN}@github.com/jvtcl/covid19-co -b circleci-project-setup
-            # cd covid19-co
-            mkdir temp
-            touch temp/test2.txt
-      - run:
-          name: test
-          command: |
-            pwd
-            ls
-      - run:
           name: config
           command: |
             git config --global user.email "joseph.tuccillo@colorado.edu"
@@ -34,9 +22,6 @@ jobs:
             
 workflows:
   version: 2.1
-  commit:
-    jobs:
-      - build
   daily:
     triggers:
       - schedule:
