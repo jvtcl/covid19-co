@@ -4,6 +4,8 @@ jobs:
   build:
     docker:
       - image: jvtcl/cotracker:latest
-  - steps:
-    - checkout
-    - run: echo hello world
+    steps:
+      - checkout
+      - run:
+          name: test
+          echo hello world
