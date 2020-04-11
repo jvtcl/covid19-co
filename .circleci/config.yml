@@ -22,7 +22,7 @@ jobs:
           command: |
             git status
             git add --all
-            git commit -m 'test update'
+            git commit -m 'refresh notebooks and figures'
             git status
             git push https://${JOE_GITHUB_TOKEN}@github.com/jvtcl/covid19-co.git
             
@@ -31,7 +31,7 @@ workflows:
   daily:
     triggers:
       - schedule:
-          cron: "35 22 * * *"
+          cron: "50 22 * * *"
           filters:
             branches:
               only:
