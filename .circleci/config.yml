@@ -1,5 +1,5 @@
 # Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
-version: 2
+version: 2.1
 jobs:
   build:
     docker:
@@ -33,14 +33,14 @@ jobs:
             git push https://${JOE_GITHUB_TOKEN}@github.com/jvtcl/covid19-co.git
             
 workflows:
-  version: 2
+  version: 2.1
   commit:
     jobs:
       - build
   daily:
     triggers:
       - schedule:
-          cron: 05 22 * * *"
+          cron: "10 22 * * *"
           filters:
             branches:
               only:
