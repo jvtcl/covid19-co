@@ -41,7 +41,7 @@ workflows:
     triggers:
       - schedule:
           cron: 05 22 * * *"
-        filters:
+          filters:
             branches:
               only:
                 - master
