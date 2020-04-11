@@ -30,4 +30,4 @@ jobs:
             git add --all
             git commit -m 'test update'
             git status
-            git push https://${JOE_GITHUB_TOKEN}@github.com/jvtcl/covid19-co.git --set-upstream origin circleci-project-setup
+            git push https://${JOE_GITHUB_TOKEN}@github.com/jvtcl/covid19-co.git
