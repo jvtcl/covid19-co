@@ -13,7 +13,7 @@ jobs:
       - run:
           name: Get latest commit
           command: |
-            git clone --depth 1 https://$(JOE_GITHUB_TOKEN)@github.com/jvtcl/covid19-co -b circleci-project-setup
+            git clone --depth 1 https://${JOE_GITHUB_TOKEN}@github.com/jvtcl/covid19-co -b circleci-project-setup
             cd covid19-co
             mkdir temp
             cd temp
