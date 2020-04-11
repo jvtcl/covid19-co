@@ -12,7 +12,7 @@ jobs:
             # git clone --depth 1 https://${JOE_GITHUB_TOKEN}@github.com/jvtcl/covid19-co -b circleci-project-setup
             # cd covid19-co
             mkdir temp
-            touch temp/test.txt
+            touch temp/test2.txt
       - run:
           name: test
           command: |
@@ -31,3 +31,16 @@ jobs:
             git commit -m 'test update'
             git status
             git push https://${JOE_GITHUB_TOKEN}@github.com/jvtcl/covid19-co.git
+            
+workflows:
+  version: 2.1
+  commit:
+    jobs:
+      -build
+  daily:
+    triggers:
+      - schedule:
+          cron: "45 21 * * *"
+    jobs:
+      - build
+      
