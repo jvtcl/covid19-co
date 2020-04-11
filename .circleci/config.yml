@@ -8,4 +8,5 @@ jobs:
       - checkout
       - run:
           name: test
-          echo "hello world"
+          command: |
+            echo "hello world"
