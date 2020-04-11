@@ -17,7 +17,7 @@ jobs:
             cd covid19-co
             mkdir temp
             cd temp
-            push test.txt
+            touch test.txt
       - run:
           name: Push updates
           command: |
