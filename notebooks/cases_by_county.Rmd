@@ -8,10 +8,7 @@ output: pdf_document
 ```{r setup, include = F}
 knitr::opts_chunk$set(fig.path='figs/',
                       fig.pos='h',
-                      # out.extra='',
                       fig.ext = 'pdf',
-                      # fig.ext = 'png',
-                      # dpi = 320,
                       echo=FALSE,
                       warning=FALSE,
                       message=FALSE)
@@ -92,18 +89,9 @@ daily_cases_cty <- lapply(covid_sf, function(covx){
     # strip `County` prefix if it exists 
     cty.covx$attribute <- gsub(' County', '', cty.covx$attribute)
     
-    # # append total population counts
-    # cty.covx <- merge(cty.covx, co_pop, by.x = 'attribute', by.y = 'Geo_NAME')
-    
-    # # append location quotient and case rates
-    # # cty.covx$lq <- lq(cty.covx)
-    # cty.covx$cases_100k <- rate(cty.covx)
-    # 
     # ensure county names in alphabetical order
     cty.covx <- cty.covx[match(sort(cty.covx$attribute), cty.covx$attribute),]
     
-    # cty.covx[,c('attribute', 'date', 'value', 'pop', 'lq', 'cases_100k')]
-    # cty.covx[,c('attribute', 'date', 'value', 'pop', 'cases_100k')]
     cty.covx[,c('attribute', 'date', 'value')]
     
 })
@@ -116,7 +104,7 @@ daily_cases_cty <- do.call(rbind, daily_cases_cty)
 
 ```{r}
 ## Read in the newly published case data file (geojson)
-cases_new <- rgdal::readOGR('https://opendata.arcgis.com/datasets/fbae539746324ca69ff34f086286845b_0.geojson')
+cases_new <- rgdal::readOGR('https://opendata.arcgis.com/datasets/fbae539746324ca69ff34f086286845b_0.geojson', verbose = F)
 ```
 
 ```{r}
@@ -182,9 +170,13 @@ trjplt1 <- ggplot(data = daily_cases_cty_viz, aes(x = date, y = cases_100k, colo
     facet_wrap(~attribute) +
     xlab('Date') +
     ylab('Cases per 100,000 People') +
+    ggtitle(label = 'Colorado COVID-19 Daily Confirmed Case Trajectories',
+                   subtitle = paste0('(', '2020-03-20 - ', (Sys.Date() - 1), ')')) +
     theme_bw() +
     theme(axis.text.x = element_text(hjust = 1, angle = 45)) +
-    theme(legend.position = 'none')
+    theme(plot.title = element_text(hjust = 0.5), 
+          plot.subtitle = element_text(hjust = 0.5), 
+          legend.position = 'none')
 trjplt1
 ```
 
@@ -198,9 +190,13 @@ trjplt2 <- ggplot(data = daily_cases_cty_viz, aes(x = date, y = cases_100k, colo
     scale_y_log10() +
     xlab('Date') +
     ylab('Log-Transformed Cases per 100,000 People') +
+    ggtitle(label = 'Colorado COVID-19 Daily Confirmed Case Trajectories',
+                   subtitle = paste0('(', '2020-03-20 - ', (Sys.Date() - 1), ')')) +
     theme_bw() +
     theme(axis.text.x = element_text(hjust = 1, angle = 45)) +
-    theme(legend.position = 'none')
+    theme(plot.title = element_text(hjust = 0.5), 
+          plot.subtitle = element_text(hjust = 0.5), 
+          legend.position = 'none')
 trjplt2
 ```
 
