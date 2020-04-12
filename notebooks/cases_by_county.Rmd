@@ -23,44 +23,17 @@ source('code/support_functions.R')
 ```
 
 ```{r eval = F}
-## fetch any new case files
-# will skip download if no new files are available
-## THIS IS SKIPPED -- all CSV files are now treated as legacy data!
-source('code/get_new_case_data.R')
-```
-
-```{r, eval = F}
-# THIS IS SKIPPED
-# county population (sex by age, aggregates to total county pop)
-co_sxa <- read.csv('data/co_sex_by_age_by_county_acs_2018_5yr.csv',
-                   stringsAsFactors = F) 
-
-# subset the county ID and total population columns
-co_pop <- co_sxa[,c('Geo_NAME', 'ACS18_5yr_B01001001')]
-
-# rename total population column
-names(co_pop)[2] <- 'pop'
-```
-
-
-```{r eval = F}
-# some of the earlier dates don't have the ` County` suffix,
-# so remove this from the total population count IDs
-co_pop$Geo_NAME <- gsub(' County', '', co_pop$Geo_NAME)
-```
-
-```{r}
 # all filenames in the `data` folder
 # legacy files (CSV from google drive)
 data_files <- list.files('data')
 ```
 
-```{r}
+```{r eval = F}
 # filenames for all (legacy) covid19 case data files
 covid_sf <- data_files[startsWith(data_files, 'covid19')]
 ```
 
-```{r}
+```{r eval = F}
 ## build daily case data
 daily_cases_cty <- lapply(covid_sf, function(covx){
     
@@ -97,9 +70,16 @@ daily_cases_cty <- lapply(covid_sf, function(covx){
 })
 ```
 
-```{r}
+```{r eval = F}
 # combine results into a single data frame
 daily_cases_cty <- do.call(rbind, daily_cases_cty)
+```
+
+```{r}
+# load previous daily cases by county data
+fn <- paste0(paste('daily_cases_by_county', (Sys.Date() - 1), sep = '_'), '.RData')
+fn <- file.path('data', 'legacy', fn)
+load(fn)
 ```
 
 ```{r}
@@ -401,3 +381,12 @@ clsplt2 <- cowplot::plot_grid(mapplot, trjplot_log, ncol = 1)
 clsplt2
 ggsave(filename = 'county-clusters-log.png', path = 'figs/', device = 'png', dpi = 320, width = 8, height = 13, units = 'in')
 ```
+
+## Save New Data
+
+```{r}
+fnx <- paste0(paste('daily_cases_by_county', Sys.Date(), sep = '_'), '.RData')
+fnx <- file.path('data', 'legacy', fnx)
+save(daily_cases_cty, file = fnx)
+```
+
