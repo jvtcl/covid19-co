@@ -1,7 +1,7 @@
 ---
 title: 'COVID-19 Confirmed Cases by Colorado County'
 author: 'Joseph Tuccillo, University of Colorado-Boulder Department of Geography'
-date: "11 April, 2020"
+date: "12 April, 2020"
 output: pdf_document
 ---
 
@@ -22,17 +22,6 @@ output: pdf_document
 
 
 
-
-
-
-
-
-```
-## OGR data source with driver: GeoJSON 
-## Source: "https://opendata.arcgis.com/datasets/fbae539746324ca69ff34f086286845b_0.geojson", layer: "fbae539746324ca69ff34f086286845b_0"
-## with 64 features
-## It has 23 fields
-```
 
 
 
@@ -89,34 +78,111 @@ Use Affinity Propagation clustering to group daily reports of confirmed cases by
 
 
 
+```
+## Error in 1:ncol(ens): argument of length 0
+```
+
+```
+## Error in Reduce(ed, f = "+"): object 'ed' not found
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'ed' not found
+```
+
+
+```
+## Error in eval(expr, envir, enclos): object 'ed' not found
+```
+
+
+```
+## Error in apcluster(es): object 'es' not found
+```
+
+
+```
+## Error in clust_vec(apce): object 'apce' not found
+```
+
+```
+## Error in sprintf("%02d", clust): object 'clust' not found
+```
+
+```
+## Error in rownames(es): object 'es' not found
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'clust' not found
+```
+
+
+```
+## Error in match(names(clust), counties$NAME): object 'clust' not found
+```
+
+
+```
+## Error in factor(clust): object 'clust' not found
+```
 
 
 
 
 
 
+```
+## Error in unique(clust[clust != "No Confirmed Cases"]): object 'clust' not found
+```
 
 
 
+```
+## Error in is_missing(values): object 'pal' not found
+```
 
 
+```
+## Error in is_missing(values): object 'pal' not found
+```
 
 
-
-
-
-
-
-
-
-
-
-
+```
+## Error in is_missing(values): object 'pal' not found
+```
 
 ### Raw Cases per 100,000 people by cluster
 
-![plot of chunk county-clusters-raw](figs/county-clusters-raw-1.pdf)
+
+```
+## Error in cowplot::plot_grid(mapplot, trjplot, ncol = 1): object 'mapplot' not found
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'clsplt1' not found
+```
+
+```
+## Error in FUN(X[[i]], ...): object 'cluster' not found
+```
 
 ### Log-transformed Cases per 100,000 people by cluster
 
-![plot of chunk county-clusters--log](figs/county-clusters--log-1.pdf)
+
+```
+## Error in cowplot::plot_grid(mapplot, trjplot_log, ncol = 1): object 'mapplot' not found
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'clsplt2' not found
+```
+
+```
+## Error in FUN(X[[i]], ...): object 'cluster' not found
+```
+
+## Save New Data
+
+
+
