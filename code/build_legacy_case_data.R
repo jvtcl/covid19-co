@@ -73,7 +73,7 @@ daily_cases_cty <- lapply(covid_sf, function(covx){
   cty.covx <- data.frame(date = date.covx, cty.covx, stringsAsFactors = F)
   
   # convert date from text to date/time
-  cty.covx$date <- lubridate::date(cty.covx$date)
+  cty.covx$date <- lubridate::date(cty.covx$date) - 1
   
   # ensure `value` column is numeric
   cty.covx$value <- as.numeric(cty.covx$value)
