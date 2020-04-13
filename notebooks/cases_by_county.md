@@ -1,7 +1,7 @@
 ---
 title: 'COVID-19 Confirmed Cases by Colorado County'
 author: 'Joseph Tuccillo, University of Colorado-Boulder Department of Geography'
-date: "12 April, 2020"
+date: "13 April, 2020"
 output: pdf_document
 ---
 
@@ -32,6 +32,9 @@ output: pdf_document
 
 
 
+```
+## Error in rbind(deparse.level, ...): numbers of columns of arguments do not match
+```
 
 
 
@@ -78,109 +81,37 @@ Use Affinity Propagation clustering to group daily reports of confirmed cases by
 
 
 
-```
-## Error in 1:ncol(ens): argument of length 0
-```
-
-```
-## Error in Reduce(ed, f = "+"): object 'ed' not found
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'ed' not found
-```
-
-
-```
-## Error in eval(expr, envir, enclos): object 'ed' not found
-```
-
-
-```
-## Error in apcluster(es): object 'es' not found
-```
-
-
-```
-## Error in clust_vec(apce): object 'apce' not found
-```
-
-```
-## Error in sprintf("%02d", clust): object 'clust' not found
-```
-
-```
-## Error in rownames(es): object 'es' not found
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'clust' not found
-```
-
-
-```
-## Error in match(names(clust), counties$NAME): object 'clust' not found
-```
-
-
-```
-## Error in factor(clust): object 'clust' not found
-```
 
 
 
 
 
 
-```
-## Error in unique(clust[clust != "No Confirmed Cases"]): object 'clust' not found
-```
 
 
 
-```
-## Error in is_missing(values): object 'pal' not found
-```
 
 
-```
-## Error in is_missing(values): object 'pal' not found
-```
 
 
-```
-## Error in is_missing(values): object 'pal' not found
-```
+
+
+
+
+
+
+
+
+
+
 
 ### Raw Cases per 100,000 people by cluster
 
-
-```
-## Error in cowplot::plot_grid(mapplot, trjplot, ncol = 1): object 'mapplot' not found
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'clsplt1' not found
-```
-
-```
-## Error in FUN(X[[i]], ...): object 'cluster' not found
-```
+![plot of chunk county-clusters-raw](figs/county-clusters-raw-1.pdf)
 
 ### Log-transformed Cases per 100,000 people by cluster
 
-
-```
-## Error in cowplot::plot_grid(mapplot, trjplot_log, ncol = 1): object 'mapplot' not found
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'clsplt2' not found
-```
-
-```
-## Error in FUN(X[[i]], ...): object 'cluster' not found
-```
+![plot of chunk county-clusters--log](figs/county-clusters--log-1.pdf)
 
 ## Save New Data
 
