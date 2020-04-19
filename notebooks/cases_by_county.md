@@ -1,7 +1,7 @@
 ---
 title: 'COVID-19 Confirmed Cases by Colorado County'
 author: 'Joseph Tuccillo, University of Colorado-Boulder Department of Geography'
-date: "18 April, 2020"
+date: "19 April, 2020"
 output: pdf_document
 ---
 
@@ -18,42 +18,68 @@ output: pdf_document
 
 
 
+```
+## Error in unique(daily_cases_cty$attribute): object 'daily_cases_cty' not found
+```
 
 
+```
+## Error in match(daily_cases_cty$attribute, cases_new$attribute): object 'daily_cases_cty' not found
+```
 
 
+```
+## Error in rbind(daily_cases_cty, cases_new): object 'daily_cases_cty' not found
+```
 
 
-
-
-
-
+```
+## Error in eval(expr, envir, enclos): object 'daily_cases_cty' not found
+```
 
 
 
 
 ```
-## Error in rbind(deparse.level, ...): numbers of columns of arguments do not match
+## Error in with(dat, value/(pop/norm)): object 'daily_cases_cty' not found
 ```
 
 
-
-
-
-
-
-
+```
+## Error in eval(expr, envir, enclos): object 'daily_cases_cty' not found
+```
 
 
 ### Raw Cases per 100,000 People by County
 
-![plot of chunk daily-cases-100k](figs/daily-cases-100k-1.pdf)
+
+```
+## Error in ggplot(data = daily_cases_cty_viz, aes(x = date, y = cases_100k, : object 'daily_cases_cty_viz' not found
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'trjplt1' not found
+```
 
 ### Log-Transformed Cases per 100,000 People by County
 
-![plot of chunk daily-cases-100k-log](figs/daily-cases-100k-log-1.pdf)
+
+```
+## Error in ggplot(data = daily_cases_cty_viz, aes(x = date, y = cases_100k, : object 'daily_cases_cty_viz' not found
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'trjplt2' not found
+```
 
 
+```
+## Error in grid.draw(plot): object 'trjplt1' not found
+```
+
+```
+## Error in grid.draw(plot): object 'trjplt2' not found
+```
 
 
 \newpage
@@ -74,46 +100,149 @@ Use Affinity Propagation clustering to group daily reports of confirmed cases by
 - Perform a final clustering (also using Affinity Propagation) to group the change trajectories from 3/20/2020 to present.
 
 
+```
+## Error in split(daily_cases_cty, daily_cases_cty$date): object 'daily_cases_cty' not found
+```
+
+
+```
+## Error in eval(expr, envir, enclos): object 'daily_cases_split' not found
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'current_cases' not found
+```
+
+
+
+```
+## Error in lapply(X = X, FUN = FUN, ...): object 'daily_cases_split' not found
+```
+
+
+```
+## Error in ncol(ens): object 'ens' not found
+```
+
+```
+## Error in Reduce(ed, f = "+"): object 'ed' not found
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'ed' not found
+```
+
+
+```
+## Error in eval(expr, envir, enclos): object 'ed' not found
+```
+
+
+```
+## Error in apcluster(es): object 'es' not found
+```
+
+
+```
+## Error in clust_vec(apce): object 'apce' not found
+```
+
+```
+## Error in sprintf("%02d", clust): object 'clust' not found
+```
+
+```
+## Error in rownames(es): object 'es' not found
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'excl' not found
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'excl' not found
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'clust' not found
+```
+
+
+```
+## Error in match(names(clust), counties$NAME): object 'clust' not found
+```
+
+
+```
+## Error in factor(clust): object 'clust' not found
+```
+
+
+```
+## Error in match(daily_cases_cty$attribute, counties$NAME): object 'daily_cases_cty' not found
+```
+
+```
+## Error in match(daily_cases_cty_viz$attribute, counties$NAME): object 'daily_cases_cty_viz' not found
+```
 
 
 
 
+```
+## Error in unique(clust[clust != "No Confirmed Cases"]): object 'clust' not found
+```
 
 
 
+```
+## Error in is_missing(values): object 'pal' not found
+```
 
 
+```
+## Error in ggplot(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= : object 'daily_cases_cty_viz' not found
+```
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```
+## Error in ggplot(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= : object 'daily_cases_cty_viz' not found
+```
 
 ### Raw Cases per 100,000 people by cluster
 
-![plot of chunk county-clusters-raw](figs/county-clusters-raw-1.pdf)
+
+```
+## Error in cowplot::plot_grid(mapplot, trjplot, ncol = 1): object 'mapplot' not found
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'clsplt1' not found
+```
+
+```
+## Error in FUN(X[[i]], ...): object 'cluster' not found
+```
 
 ### Log-transformed Cases per 100,000 people by cluster
 
-![plot of chunk county-clusters--log](figs/county-clusters--log-1.pdf)
+
+```
+## Error in cowplot::plot_grid(mapplot, trjplot_log, ncol = 1): object 'mapplot' not found
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'clsplt2' not found
+```
+
+```
+## Error in FUN(X[[i]], ...): object 'cluster' not found
+```
 
 ## Save New Data
 
 
+```
+## Error in eval(expr, envir, enclos): object 'daily_cases_cty' not found
+```
 
