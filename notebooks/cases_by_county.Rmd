@@ -22,59 +22,6 @@ knitr::opts_knit$set(root.dir = '../')
 source('code/support_functions.R')
 ```
 
-```{r eval = F}
-# all filenames in the `data` folder
-# legacy files (CSV from google drive)
-data_files <- list.files('data')
-```
-
-```{r eval = F}
-# filenames for all (legacy) covid19 case data files
-covid_sf <- data_files[startsWith(data_files, 'covid19')]
-```
-
-```{r eval = F}
-## build daily case data
-daily_cases_cty <- lapply(covid_sf, function(covx){
-    
-    # full path to the file
-    path.covx <- file.path('data', covx)
-    
-    # extract date info from filename
-    date.covx <- gsub('covid19_case_summary_', '', covx) # strip prefix
-    date.covx <- gsub('.csv', '', date.covx) # strip file extension
-    
-    # read in file
-    data.covx <- read.csv(path.covx, stringsAsFactors = F)
-    
-    # subset to counties
-    cty.covx <- data.covx[data.covx$description == 'Case Counts by County' & data.covx$metric == 'Cases',] 
-    
-    # append date 
-    cty.covx <- data.frame(date = date.covx, cty.covx, stringsAsFactors = F)
-    
-    # convert date from text to date/time
-    cty.covx$date <- lubridate::date(cty.covx$date)
-    
-    # ensure `value` column is numeric
-    cty.covx$value <- as.numeric(cty.covx$value)
-    
-    # strip `County` prefix if it exists 
-    cty.covx$attribute <- gsub(' County', '', cty.covx$attribute)
-    
-    # ensure county names in alphabetical order
-    cty.covx <- cty.covx[match(sort(cty.covx$attribute), cty.covx$attribute),]
-    
-    cty.covx[,c('attribute', 'date', 'value')]
-    
-})
-```
-
-```{r eval = F}
-# combine results into a single data frame
-daily_cases_cty <- do.call(rbind, daily_cases_cty)
-```
-
 ```{r}
 # load previous daily cases by county data
 fn <- paste0(paste('daily_cases_by_county', (Sys.Date() - 1), sep = '_'), '.RData')
@@ -97,12 +44,6 @@ cases_new <- with(cases_new@data,
                       pop = County_Population,
                       stringsAsFactors = F
                   ))
-```
-
-```{r, eval = F}
-## compute cases/100k
-## THIS IS SKIPPED
-cases_new$cases_100k <- rate(cases_new)
 ```
 
 ```{r}
@@ -293,6 +234,7 @@ counties['cluster'] <- factor(clust)
 ```
 
 ```{r}
+# append cluster labels
 daily_cases_cty$cluster <- counties$cluster[match(daily_cases_cty$attribute, counties$NAME)]
 daily_cases_cty_viz$cluster <- counties$cluster[match(daily_cases_cty_viz$attribute, counties$NAME)]
 ```
@@ -385,8 +327,9 @@ ggsave(filename = 'county-clusters-log.png', path = 'figs/', device = 'png', dpi
 ## Save New Data
 
 ```{r}
-fnx <- paste0(paste('daily_cases_by_county', Sys.Date(), sep = '_'), '.RData')
+fnx <- paste0(paste('daily_cases_by_county', Sys.Date()-1, sep = '_'), '.RData')
 fnx <- file.path('data', 'legacy', fnx)
-save(daily_cases_cty, file = fnx)
+out <- daily_cases_cty[,-ncol(daily_cases_cty)]  # leave `cluster` column out
+save(out, file = fnx)
 ```
 
