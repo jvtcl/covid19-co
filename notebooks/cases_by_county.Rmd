@@ -47,6 +47,11 @@ cases_new <- with(cases_new@data,
 ```
 
 ```{r}
+## compute cases/100k
+cases_new$cases_100k <- rate(cases_new)
+```
+
+```{r}
 # ensure county names are in alphabetical order (like legacy data)
 cases_new <- cases_new[match(unique(daily_cases_cty$attribute), cases_new$attribute),]
 ```
@@ -92,7 +97,7 @@ trjplt1 <- ggplot(data = daily_cases_cty_viz, aes(x = date, y = cases_100k, colo
     xlab('Date') +
     ylab('Cases per 100,000 People') +
     ggtitle(label = 'Colorado COVID-19 Daily Confirmed Case Trajectories',
-                   subtitle = paste0('(', '2020-03-20 - ', (Sys.Date() - 1), ')')) +
+                   subtitle = paste0('(', '2020-03-19 - ', (Sys.Date() - 1), ')')) +
     theme_bw() +
     theme(axis.text.x = element_text(hjust = 1, angle = 45)) +
     theme(plot.title = element_text(hjust = 0.5), 
@@ -112,7 +117,7 @@ trjplt2 <- ggplot(data = daily_cases_cty_viz, aes(x = date, y = cases_100k, colo
     xlab('Date') +
     ylab('Log-Transformed Cases per 100,000 People') +
     ggtitle(label = 'Colorado COVID-19 Daily Confirmed Case Trajectories',
-                   subtitle = paste0('(', '2020-03-20 - ', (Sys.Date() - 1), ')')) +
+                   subtitle = paste0('(', '2020-03-19 - ', (Sys.Date() - 1), ')')) +
     theme_bw() +
     theme(axis.text.x = element_text(hjust = 1, angle = 45)) +
     theme(plot.title = element_text(hjust = 0.5), 
@@ -139,11 +144,11 @@ Use Affinity Propagation clustering to group daily reports of confirmed cases by
 1. The current rate of confirmed cases per 100,000 people.
 2. The change in confirmed cases per 100,000 people since the previous day.
 
-- March 20, 2020 is used as the intial date, since it is the first day at which the change in cases/100k people by county can be measured (3/19/2020 marks the first day in which all counties were reporting).
+- March 19, 2020 is used as the intial date, since it is the first day at which the change in cases/100k people by county can be measured (3/18/2020 marks the first day in which all counties were reporting). (_**NOTE** that the data is published with a one-day lag._)
 
 - From the ensemble of daily clusterings, measure the percentage of days to date that any two counties shared a cluster label.
 
-- Perform a final clustering (also using Affinity Propagation) to group the change trajectories from 3/20/2020 to present.
+- Perform a final clustering (also using Affinity Propagation) to group the change trajectories from 3/19/2020 to present.
 
 ```{r}
 # convert daily cases back to list format
@@ -261,7 +266,7 @@ mapplot <- ggplot() +
             scale_fill_manual(values = pal) +
             geom_shadowtext(data = county_labels, aes(x = X, y = Y, label = GEOID), color = 'white', size = 3, fontface = 'bold', stroke = 0.1) +
             ggtitle(label = 'Colorado COVID-19 Daily Confirmed Case Trajectories',
-                   subtitle = paste0('(', '2020-03-20 - ', (Sys.Date() - 1), ')')) +
+                   subtitle = paste0('(', '2020-03-19 - ', (Sys.Date() - 1), ')')) +
             theme_void() +
             theme(plot.title = element_text(hjust = 0.5), 
                   plot.subtitle = element_text(hjust = 0.5), 
@@ -271,12 +276,12 @@ mapplot <- ggplot() +
 ```{r}
 ## change trajectories by cluster
 # untransformed y-axis
-trjplot <- ggplot(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= '2020-03-20',],
+trjplot <- ggplot(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= '2020-03-19',],
             aes(x = date, y = cases_100k, color = cluster, group = attribute)) + 
           geom_line(size = 0.75) +
           # scale_color_brewer(type = 'qual', palette = 'Set3') +
           scale_color_manual(values = pal) +
-          geom_smooth(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= '2020-03-20',],
+          geom_smooth(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= '2020-03-19',],
                       aes(x = date, y = cases_100k), inherit.aes = F, color = 'black', fill = NA,   
                       linetype = 'dashed', size = 0.5) + 
           facet_wrap(~cluster) +
@@ -290,12 +295,12 @@ trjplot <- ggplot(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= '2020-0
 
 ```{r}
 # with logarithmic y-axis
-trjplot_log <- ggplot(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= '2020-03-20',],
+trjplot_log <- ggplot(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= '2020-03-19',],
                aes(x = date, y = cases_100k, color = cluster, group = attribute)) + 
           geom_line(size = 0.75) +
           # scale_color_brewer(type = 'qual', palette = 'Set3') +
           scale_color_manual(values = pal) +
-          geom_smooth(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= '2020-03-20',],
+          geom_smooth(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= '2020-03-19',],
                       aes(x = date, y = cases_100k), inherit.aes = F, color = 'black', fill = NA,  
                       linetype = 'dashed', size = 0.5) + 
           facet_wrap(~cluster) +
@@ -329,7 +334,7 @@ ggsave(filename = 'county-clusters-log.png', path = 'figs/', device = 'png', dpi
 ```{r}
 fnx <- paste0(paste('daily_cases_by_county', Sys.Date()-1, sep = '_'), '.RData')
 fnx <- file.path('data', 'legacy', fnx)
-out <- daily_cases_cty[,-ncol(daily_cases_cty)]  # leave `cluster` column out
-save(out, file = fnx)
+daily_cases_cty <- daily_cases_cty[,-ncol(daily_cases_cty)]  # drop `cluster` column 
+save(daily_cases_cty, file = fnx)
 ```
 
