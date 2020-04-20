@@ -1,7 +1,7 @@
 ---
 title: 'COVID-19 Confirmed Cases by Colorado County'
 author: 'Joseph Tuccillo, University of Colorado-Boulder Department of Geography'
-date: "19 April, 2020"
+date: "20 April, 2020"
 output: pdf_document
 ---
 
@@ -10,6 +10,11 @@ output: pdf_document
 ## Daily Cases by Colorado County
 
 
+
+
+```
+## Error in readChar(con, 5L, useBytes = TRUE): cannot open the connection
+```
 
 
 
@@ -93,11 +98,11 @@ Use Affinity Propagation clustering to group daily reports of confirmed cases by
 1. The current rate of confirmed cases per 100,000 people.
 2. The change in confirmed cases per 100,000 people since the previous day.
 
-- March 20, 2020 is used as the intial date, since it is the first day at which the change in cases/100k people by county can be measured (3/19/2020 marks the first day in which all counties were reporting).
+- March 19, 2020 is used as the intial date, since it is the first day at which the change in cases/100k people by county can be measured (3/18/2020 marks the first day in which all counties were reporting). (_**NOTE** that the data is published with a one-day lag._)
 
 - From the ensemble of daily clusterings, measure the percentage of days to date that any two counties shared a cluster label.
 
-- Perform a final clustering (also using Affinity Propagation) to group the change trajectories from 3/20/2020 to present.
+- Perform a final clustering (also using Affinity Propagation) to group the change trajectories from 3/19/2020 to present.
 
 
 ```
@@ -244,5 +249,9 @@ Use Affinity Propagation clustering to group daily reports of confirmed cases by
 
 ```
 ## Error in eval(expr, envir, enclos): object 'daily_cases_cty' not found
+```
+
+```
+## Error in save(daily_cases_cty, file = fnx): object 'daily_cases_cty' not found
 ```
 
