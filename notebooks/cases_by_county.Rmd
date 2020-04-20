@@ -46,7 +46,7 @@ cases_new <- with(cases_new@data,
                   ))
 ```
 
-```{r}
+```{r eval = F}
 ## compute cases/100k
 cases_new$cases_100k <- rate(cases_new)
 ```
@@ -147,6 +147,7 @@ Use Affinity Propagation clustering to group daily reports of confirmed cases by
 - March 19, 2020 is used as the intial date, since it is the first day at which the change in cases/100k people by county can be measured (3/18/2020 marks the first day in which all counties were reporting). (_**NOTE** that the data is published with a one-day lag._)
 
 - From the ensemble of daily clusterings, measure the percentage of days to date that any two counties shared a cluster label.
+    - **EXPERIMENTAL**: the similarities are now upweighted by more recent dates. This is subject to change.
 
 - Perform a final clustering (also using Affinity Propagation) to group the change trajectories from 3/19/2020 to present.
 
@@ -191,23 +192,25 @@ ens <- sapply(4:length(daily_cases_split), function(i){
 ```
 
 ```{r}
+## simple weights
+w <- 1:length(daily_cases_split) / length(daily_cases_split)
+```
+
+```{r}
 # convert labels to binary format
-ed <- lapply(1:ncol(ens), function(i){
+# ed <- lapply(1:ncol(ens), function(i){
+es <- lapply(1:ncol(ens), function(i){
     
     indmat <- model.matrix(~factor(ens[,i])-1)
     colnames(indmat) <- paste0(paste0('d', i), letters[1:ncol(indmat)])
     rownames(indmat) <- rownames(ens)
-    as.matrix(vegan::vegdist(indmat, method = 'jaccard'))
+    d <- as.matrix(vegan::vegdist(indmat, method = 'jaccard'))
+    s <- ifelse(d == 1, 0, 1)
+    # s * w[i]
+    s * (1 + w[i])
     
 })
-ed <- Reduce(ed, f = '+')
-ed <- ed / length(daily_cases_split)
-```
-
-```{r}
-## build similarity matrix 
-# similarity as percentage of times two counties co-clustered
-es <- 1 - ed
+es <- Reduce(es, f = '+')
 ```
 
 ```{r}
@@ -332,7 +335,8 @@ ggsave(filename = 'county-clusters-log.png', path = 'figs/', device = 'png', dpi
 ## Save New Data
 
 ```{r}
-fnx <- paste0(paste('daily_cases_by_county', Sys.Date()-1, sep = '_'), '.RData')
+# fnx <- paste0(paste('daily_cases_by_county', Sys.Date()-1, sep = '_'), '.RData')
+fnx <- paste0(paste('daily_cases_by_county', Sys.Date(), sep = '_'), '.RData')
 fnx <- file.path('data', 'legacy', fnx)
 daily_cases_cty <- daily_cases_cty[,-ncol(daily_cases_cty)]  # drop `cluster` column 
 save(daily_cases_cty, file = fnx)
