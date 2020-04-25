@@ -31,7 +31,7 @@ load(fn)
 
 ```{r}
 ## Read in the newly published case data file (geojson)
-cases_new <- rgdal::readOGR('https://opendata.arcgis.com/datasets/fbae539746324ca69ff34f086286845b_0.geojson', verbose = F)
+cases_new <- rgdal::readOGR('https://opendata.arcgis.com/datasets/7dd9bfa5607f4c70b2a7c9634ccdca53_0.geojson', verbose = F)
 ```
 
 ```{r}
@@ -207,7 +207,8 @@ es <- lapply(1:ncol(ens), function(i){
     d <- as.matrix(vegan::vegdist(indmat, method = 'jaccard'))
     s <- ifelse(d == 1, 0, 1)
     # s * w[i]
-    s * (1 + w[i])
+    # s * (1 + w[i])
+    s
     
 })
 es <- Reduce(es, f = '+')
