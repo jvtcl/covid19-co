@@ -67,7 +67,7 @@ daily_cases_cty <- lapply(covid_sf, function(covx){
   data.covx <- read.csv(path.covx, stringsAsFactors = F)
   
   # subset to counties
-  cty.covx <- data.covx[data.covx$description == 'Case Counts by County' & data.covx$metric == 'Cases',] 
+  cty.covx <- data.covx[data.covx$description %in% c('Case Counts by County', 'Colorado Case Counts by County') & data.covx$metric == 'Cases',] 
   
   # append date 
   cty.covx <- data.frame(date = date.covx, cty.covx, stringsAsFactors = F)
