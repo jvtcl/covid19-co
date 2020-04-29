@@ -46,11 +46,6 @@ cases_new <- with(cases_new@data,
                   ))
 ```
 
-```{r eval = F}
-## compute cases/100k
-cases_new$cases_100k <- rate(cases_new)
-```
-
 ```{r}
 # ensure county names are in alphabetical order (like legacy data)
 cases_new <- cases_new[match(unique(daily_cases_cty$attribute), cases_new$attribute),]
@@ -191,7 +186,7 @@ ens <- sapply(4:length(daily_cases_split), function(i){
 })
 ```
 
-```{r}
+```{r eval = F}
 ## simple weights
 w <- 1:length(daily_cases_split) / length(daily_cases_split)
 ```
