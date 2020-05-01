@@ -48,6 +48,7 @@ if(nrow(csv_files_target) > 0){
 
 # all filenames in the `data` folder
 # legacy files (CSV from google drive)
+setwd('../')
 data_files <- list.files('data')
 
 # filenames for all (legacy) covid19 case data files
