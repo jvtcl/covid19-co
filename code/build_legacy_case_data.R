@@ -15,9 +15,11 @@ Source: https://community.rstudio.com/t/how-to-download-a-google-drives-contents
 
 library(googledrive)
 library(purrr)
+setwd('../')
 
 ## CDPHE case data folder (public link)
-folder_url <- "https://drive.google.com/drive/folders/11ulhC5FwnRhiKqxDl6_9PnSMOjCWnLPB"
+# folder_url <- "https://drive.google.com/drive/folders/11ulhC5FwnRhiKqxDl6_9PnSMOjCWnLPB"
+folder_url <- "https://drive.google.com/drive/folders/1bBAC7H-pdEDgPxRuU_eR36ghzc0HWNf1"
 
 ## identify this folder on Drive
 ## let googledrive know this is a file ID or URL, as opposed to file name
@@ -28,7 +30,7 @@ csv_files_remote <- drive_ls(folder, type = "csv")
 
 ## get the list of local (already downloaded) CSV files
 current_csv_files <- list.files('data')
-current_csv_files <- current_csv_files[startsWith(current_csv_files, 'covid19_case_summary') & 
+current_csv_files <- current_csv_files[startsWith(current_csv_files, 'covid19_case_summary') &
                                          endsWith(current_csv_files, '.csv')]
 
 ## remove the names of local CSV files
@@ -38,8 +40,9 @@ csv_files_target <- csv_files_remote[!csv_files_remote$name %in% current_csv_fil
 ## download new files found, if any
 if(nrow(csv_files_target) > 0){
   setwd('data')
-  walk(csv_files_target$id, ~ drive_download(as_id(.x)))
-  setwd('..')
+  walk(csv_files_target$id, ~ drive_download(as_id(.x), 
+                                             overwrite = T))
+  # setwd('..')
 }else{
   message('No new case data files available.')
 }
