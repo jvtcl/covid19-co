@@ -14,16 +14,9 @@ output: pdf_document
 
 
 
-
-
-
-
-
-
-
-
 ```
-## Error in rbind(deparse.level, ...): numbers of columns of arguments do not match
+## [1] "Feature Layer"
+## [1] "esriGeometryPolygon"
 ```
 
 
@@ -36,6 +29,9 @@ output: pdf_document
 
 
 ### Raw Cases per 100,000 People by County
+
+
+
 
 ![plot of chunk daily-cases-100k](figs/daily-cases-100k-1.pdf)
 
