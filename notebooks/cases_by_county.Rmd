@@ -31,10 +31,28 @@ load(fn)
 
 ```{r}
 ## Read in the newly published case data file (geojson)
-cases_new <- rgdal::readOGR('https://opendata.arcgis.com/datasets/7dd9bfa5607f4c70b2a7c9634ccdca53_0.geojson', verbose = F)
+# cases_new <- rgdal::readOGR('https://opendata.arcgis.com/datasets/7dd9bfa5607f4c70b2a7c9634ccdca53_0.geojson', verbose = F)
+library(esri2sf)
+library(lubridate)
+
+url <- 'https://services3.arcgis.com/66aUo8zsujfVXRIT/arcgis/rest/services/Colorado_COVID19_Positive_Cases/FeatureServer/0'
+
+cases_new <- esri2sf(url = url,
+        outFields = c('LABEL', 'Date_Data_Last_Updated', 'County_Pos_Cases', 'County_Population'))
+
+## strip geometry
+st_geometry(cases_new) <- NULL
+
+## rename columns
+names(cases_new) <- c('attribute', 'date', 'value', 'pop')
+
+## format date
+cases_new$date <- gsub('Data through ', '', cases_new$date)
+cases_new$date <- mdy(cases_new$date)
+
 ```
 
-```{r}
+```{r eval = F}
 ## append new case data
 cases_new <- with(cases_new@data, 
                   data.frame(
@@ -48,10 +66,10 @@ cases_new <- with(cases_new@data,
 
 ```{r}
 # ensure county names are in alphabetical order (like legacy data)
-cases_new <- cases_new[match(unique(daily_cases_cty$attribute), cases_new$attribute),]
+cases_new <- cases_new[match(sort(unique(daily_cases_cty$attribute)), cases_new$attribute),]
 ```
 
-```{r}
+```{r eval = F}
 ## append pop counts to `daily_cases_cty` from `cases_new`
 daily_cases_cty$pop <- cases_new$pop[match(daily_cases_cty$attribute, cases_new$attribute)]
 ```

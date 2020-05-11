@@ -1,4 +1,6 @@
 "
+DEPRECATED
+
 Builds legacy CDPHE case data files from Google Drive.
 
 This should ONLY be used if you wish to manually rebuid 
