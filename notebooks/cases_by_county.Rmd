@@ -30,29 +30,35 @@ load(fn)
 ```
 
 ```{r}
-library(esri2sf)
-library(lubridate)
-
-url <- 'https://services3.arcgis.com/66aUo8zsujfVXRIT/arcgis/rest/services/Colorado_COVID19_Positive_Cases/FeatureServer/0'
-
-cases_new <- esri2sf(url = url,
-        outFields = c('LABEL', 'Date_Data_Last_Updated', 'County_Pos_Cases', 'County_Population'))
-
-## strip geometry
-st_geometry(cases_new) <- NULL
-
-## rename columns
-names(cases_new) <- c('attribute', 'date', 'value', 'pop')
-
-## format date
-cases_new$date <- gsub('Data through ', '', cases_new$date)
-cases_new$date <- mdy(cases_new$date)
-
-# ensure county names are in alphabetical order (like legacy data)
-cases_new <- cases_new[match(sort(unique(daily_cases_cty$attribute)), cases_new$attribute),]
-
-## append `cases_new` to `daily_cases_cty`
-daily_cases_cty <- rbind(daily_cases_cty, cases_new)
+## append new cases ONLY if most recent previous date
+## does not match the one-day lagged date
+if((Sys.Date() - 1) > max(daily_cases_cty$date)){
+    
+    library(esri2sf)
+    library(lubridate)
+    
+    url <- 'https://services3.arcgis.com/66aUo8zsujfVXRIT/arcgis/rest/services/Colorado_COVID19_Positive_Cases/FeatureServer/0'
+    
+    cases_new <- esri2sf(url = url,
+            outFields = c('LABEL', 'Date_Data_Last_Updated', 'County_Pos_Cases', 'County_Population'))
+    
+    ## strip geometry
+    st_geometry(cases_new) <- NULL
+    
+    ## rename columns
+    names(cases_new) <- c('attribute', 'date', 'value', 'pop')
+    
+    ## format date
+    cases_new$date <- gsub('Data through ', '', cases_new$date)
+    cases_new$date <- mdy(cases_new$date)
+    
+    # ensure county names are in alphabetical order (like legacy data)
+    cases_new <- cases_new[match(sort(unique(daily_cases_cty$attribute)), cases_new$attribute),]
+    
+    ## append `cases_new` to `daily_cases_cty`
+    daily_cases_cty <- rbind(daily_cases_cty, cases_new)
+    
+}
 ```
 
 ```{r}
