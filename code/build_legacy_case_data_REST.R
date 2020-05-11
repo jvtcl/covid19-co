@@ -20,8 +20,20 @@ daily_cases_cty$Date <- mdy(daily_cases_cty$Date) - 1
 names(daily_cases_cty) <- c('attribute', 'date', 'value', 'pop')
 
 ## sort by date, then by county
+cty_pop <- unique(daily_cases_cty[,c('attribute', 'pop')])
+cty_pop <- cty_pop[order(cty_pop$attribute),]
+cty_pop <- cty_pop[!cty_pop$attribute %in% c('Grand Total County', 'Unknown Or Pending County'),]
+
 daily_cases_cty <- split(daily_cases_cty, daily_cases_cty$date)
-daily_cases_cty <- lapply(daily_cases_cty, function(x)x[order(x$attribute),])
+
+daily_cases_cty <- lapply(daily_cases_cty, function(x){
+  x <- x[match(cty_pop$attribute, x$attribute),]
+  x$attribute <- cty_pop$attribute
+  x$pop <- cty_pop$pop[match(cty_pop$attribute, x$attribute)]
+  x$value[is.na(x$value)] <- 0 # non-reporting counties
+  x$date <- unique(x)$date[1] # pad dates
+  x
+})
 daily_cases_cty <- do.call(rbind, daily_cases_cty)
 rownames(daily_cases_cty) <- NULL
 

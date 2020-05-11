@@ -30,8 +30,6 @@ load(fn)
 ```
 
 ```{r}
-## Read in the newly published case data file (geojson)
-# cases_new <- rgdal::readOGR('https://opendata.arcgis.com/datasets/7dd9bfa5607f4c70b2a7c9634ccdca53_0.geojson', verbose = F)
 library(esri2sf)
 library(lubridate)
 
@@ -50,31 +48,9 @@ names(cases_new) <- c('attribute', 'date', 'value', 'pop')
 cases_new$date <- gsub('Data through ', '', cases_new$date)
 cases_new$date <- mdy(cases_new$date)
 
-```
-
-```{r eval = F}
-## append new case data
-cases_new <- with(cases_new@data, 
-                  data.frame(
-                      attribute = LABEL,
-                      date = Sys.Date() - 1, 
-                      value = County_Pos_Cases,
-                      pop = County_Population,
-                      stringsAsFactors = F
-                  ))
-```
-
-```{r}
 # ensure county names are in alphabetical order (like legacy data)
 cases_new <- cases_new[match(sort(unique(daily_cases_cty$attribute)), cases_new$attribute),]
-```
 
-```{r eval = F}
-## append pop counts to `daily_cases_cty` from `cases_new`
-daily_cases_cty$pop <- cases_new$pop[match(daily_cases_cty$attribute, cases_new$attribute)]
-```
-
-```{r}
 ## append `cases_new` to `daily_cases_cty`
 daily_cases_cty <- rbind(daily_cases_cty, cases_new)
 ```
@@ -102,6 +78,11 @@ daily_cases_cty_viz <- daily_cases_cty[daily_cases_cty$cases_100k > 0,]
 
 ### Raw Cases per 100,000 People by County
 
+```{r}
+current_date <- max(daily_cases_cty$date)
+```
+
+
 ```{r daily-cases-100k, fig.height = 12, fig.width = 12, dpi = 320}
 library(ggplot2)
 trjplt1 <- ggplot(data = daily_cases_cty_viz, aes(x = date, y = cases_100k, color = attribute)) + 
@@ -110,7 +91,7 @@ trjplt1 <- ggplot(data = daily_cases_cty_viz, aes(x = date, y = cases_100k, colo
     xlab('Date') +
     ylab('Cases per 100,000 People') +
     ggtitle(label = 'Colorado COVID-19 Daily Confirmed Case Trajectories',
-                   subtitle = paste0('(', '2020-03-19 - ', (Sys.Date() - 1), ')')) +
+                   subtitle = paste0('(', '2020-03-19 - ', current_date, ')')) +
     theme_bw() +
     theme(axis.text.x = element_text(hjust = 1, angle = 45)) +
     theme(plot.title = element_text(hjust = 0.5), 
@@ -130,7 +111,7 @@ trjplt2 <- ggplot(data = daily_cases_cty_viz, aes(x = date, y = cases_100k, colo
     xlab('Date') +
     ylab('Log-Transformed Cases per 100,000 People') +
     ggtitle(label = 'Colorado COVID-19 Daily Confirmed Case Trajectories',
-                   subtitle = paste0('(', '2020-03-19 - ', (Sys.Date() - 1), ')')) +
+                   subtitle = paste0('(', '2020-03-19 - ', current_date, ')')) +
     theme_bw() +
     theme(axis.text.x = element_text(hjust = 1, angle = 45)) +
     theme(plot.title = element_text(hjust = 0.5), 
@@ -349,7 +330,6 @@ ggsave(filename = 'county-clusters-log.png', path = 'figs/', device = 'png', dpi
 ## Save New Data
 
 ```{r}
-# fnx <- paste0(paste('daily_cases_by_county', Sys.Date()-1, sep = '_'), '.RData')
 fnx <- paste0(paste('daily_cases_by_county', Sys.Date(), sep = '_'), '.RData')
 fnx <- file.path('data', 'legacy', fnx)
 daily_cases_cty <- daily_cases_cty[,-ncol(daily_cases_cty)]  # drop `cluster` column 
