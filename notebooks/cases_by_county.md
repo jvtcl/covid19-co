@@ -1,7 +1,7 @@
 ---
 title: 'COVID-19 Confirmed Cases by Colorado County'
 author: 'Joseph Tuccillo, University of Colorado-Boulder Department of Geography'
-date: "11 May, 2020"
+date: "12 May, 2020"
 output: pdf_document
 ---
 
@@ -17,6 +17,10 @@ output: pdf_document
 ```
 ## [1] "Feature Layer"
 ## [1] "esriGeometryPolygon"
+```
+
+```
+## Error in rbind(deparse.level, ...): numbers of columns of arguments do not match
 ```
 
 
