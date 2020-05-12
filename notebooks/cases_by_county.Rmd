@@ -24,7 +24,8 @@ source('code/support_functions.R')
 
 ```{r}
 # load previous daily cases by county data
-fn <- paste0(paste('daily_cases_by_county', (Sys.Date() - 1), sep = '_'), '.RData')
+# fn <- paste0(paste('daily_cases_by_county', (Sys.Date() - 1), sep = '_'), '.RData')
+fn <- max(list.files('data/legacy'))
 fn <- file.path('data', 'legacy', fn)
 load(fn)
 ```
