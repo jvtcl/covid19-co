@@ -33,10 +33,12 @@ load(fn)
 ```{r}
 ## append new cases ONLY if most recent previous date
 ## does not match the one-day lagged date
-if((Sys.Date() - 1) - max(daily_cases_cty$date) > 1){
+## OR it is past 4pm, when the new data is released
+library(lubridate)
+
+if(((Sys.Date() - 1) - max(daily_cases_cty$date) > 1) | (hour(Sys.time()) >= 16)){
     
     library(esri2sf)
-    library(lubridate)
     
     url <- 'https://services3.arcgis.com/66aUo8zsujfVXRIT/arcgis/rest/services/Colorado_COVID19_Positive_Cases/FeatureServer/0'
     
