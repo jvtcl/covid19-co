@@ -33,7 +33,7 @@ load(fn)
 ```{r}
 ## append new cases ONLY if most recent previous date
 ## does not match the one-day lagged date
-if((Sys.Date() - 1) > max(daily_cases_cty$date)){
+if((Sys.Date() - 1) - max(daily_cases_cty$date) > 1){
     
     library(esri2sf)
     library(lubridate)
@@ -56,6 +56,9 @@ if((Sys.Date() - 1) > max(daily_cases_cty$date)){
     # ensure county names are in alphabetical order (like legacy data)
     cases_new <- cases_new[match(sort(unique(daily_cases_cty$attribute)), cases_new$attribute),]
     
+    # compute daily cases per 100k
+    cases_new$cases_100k <- rate(cases_new)
+    
     ## append `cases_new` to `daily_cases_cty`
     daily_cases_cty <- rbind(daily_cases_cty, cases_new)
     
@@ -72,7 +75,7 @@ daily_cases_cty <- daily_cases_cty[complete.cases(daily_cases_cty),]
 lapply(split(daily_cases_cty, daily_cases_cty$date), nrow)
 ```
 
-```{r}
+```{r eval = F}
 ## compute cases per 100k
 daily_cases_cty$cases_100k <- rate(daily_cases_cty)
 ```
@@ -337,7 +340,8 @@ ggsave(filename = 'county-clusters-log.png', path = 'figs/', device = 'png', dpi
 ## Save New Data
 
 ```{r}
-fnx <- paste0(paste('daily_cases_by_county', Sys.Date(), sep = '_'), '.RData')
+# fnx <- paste0(paste('daily_cases_by_county', Sys.Date(), sep = '_'), '.RData')
+fnx <- paste0(paste('daily_cases_by_county', (max(daily_cases_cty$date) + 1), sep = '_'), '.RData')
 fnx <- file.path('data', 'legacy', fnx)
 daily_cases_cty <- daily_cases_cty[,-ncol(daily_cases_cty)]  # drop `cluster` column 
 save(daily_cases_cty, file = fnx)
