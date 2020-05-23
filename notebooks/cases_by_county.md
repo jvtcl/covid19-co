@@ -1,7 +1,7 @@
 ---
 title: 'COVID-19 Confirmed Cases by Colorado County'
 author: 'Joseph Tuccillo, University of Colorado-Boulder Department of Geography'
-date: "22 May, 2020"
+date: "23 May, 2020"
 output: pdf_document
 ---
 
@@ -94,25 +94,11 @@ Use Affinity Propagation clustering to group daily reports of confirmed cases by
 
 ### Raw Cases per 100,000 people by cluster
 
-
-```
-## Error: Insufficient values in manual scale. 14 needed but only 13 provided.
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'clsplt1' not found
-```
+![plot of chunk county-clusters-raw](figs/county-clusters-raw-1.pdf)
 
 ### Log-transformed Cases per 100,000 people by cluster
 
-
-```
-## Error: Insufficient values in manual scale. 14 needed but only 13 provided.
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'clsplt2' not found
-```
+![plot of chunk county-clusters--log](figs/county-clusters--log-1.pdf)
 
 ## Save New Data
 
