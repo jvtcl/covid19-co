@@ -1,5 +1,6 @@
 library(esri2sf)
 library(lubridate)
+source('code/support_functions.R')
 
 ## REST API Connection
 url <- 'https://services3.arcgis.com/66aUo8zsujfVXRIT/arcgis/rest/services/CDPHE_COVID19_CountyLevel_Open_Data_Repository/FeatureServer/0/'
@@ -36,6 +37,9 @@ daily_cases_cty <- lapply(daily_cases_cty, function(x){
 })
 daily_cases_cty <- do.call(rbind, daily_cases_cty)
 rownames(daily_cases_cty) <- NULL
+
+## append case rates
+daily_cases_cty$cases_100k <- rate(daily_cases_cty)
 
 ## check date for naming file
 date_check <- as.numeric(Sys.Date() - max(daily_cases_cty$date))
