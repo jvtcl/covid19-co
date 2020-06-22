@@ -1,17 +1,30 @@
-library(esri2sf)
+# library(esri2sf)
+library(rjson)
 library(lubridate)
 source('code/support_functions.R')
-
+r
 ## REST API Connection
-url <- 'https://services3.arcgis.com/66aUo8zsujfVXRIT/arcgis/rest/services/CDPHE_COVID19_CountyLevel_Open_Data_Repository/FeatureServer/0/'
+# url <- 'https://services3.arcgis.com/66aUo8zsujfVXRIT/arcgis/rest/services/CDPHE_COVID19_CountyLevel_Open_Data_Repository/FeatureServer/0/'
+
+# url <- "https://opendata.arcgis.com/datasets/1456d8d43486449292e5784dcd9ce4a7_0.geojson?q=Metric:Cases" # not working
+# url <- "https://opendata.arcgis.com/datasets/1456d8d43486449292e5784dcd9ce4a7_0.geojson?&Metric=Cases" # not working
+url <- "https://opendata.arcgis.com/datasets/1456d8d43486449292e5784dcd9ce4a7_0.geojson"
 
 ## Get daily cases by county
-daily_cases_cty <- esri2sf(url = url,
-                           outFields = c('LABEL', 'Date', 'Value', 'POP'),
-                           where = "Metric = 'Cases'")
+# daily_cases_cty <- esri2sf(url = url,
+#                            outFields = c('LABEL', 'Date', 'Value', 'POP'),
+#                            where = "Metric = 'Cases'")
 
-## strip geometry
-st_geometry(daily_cases_cty) <- NULL
+daily_cases_cty <- read_json(url, simplifyDataFrame = T, flatten = T)
+
+# hacky stuff, because the JSON query isn't working...
+daily_cases_cty <- daily_cases_cty$features
+names(daily_cases_cty) <- gsub('properties.', '', names(daily_cases_cty)) 
+daily_cases_cty <- daily_cases_cty[daily_cases_cty$Metric == 'Cases',]
+daily_cases_cty <- daily_cases_cty[,c('LABEL', 'Date', 'Value', 'POP')]
+
+# ## strip geometry
+# st_geometry(daily_cases_cty) <- NULL
 
 ## format date
 # offset to account for one-day lag in reporting
