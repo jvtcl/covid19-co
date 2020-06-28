@@ -1,7 +1,7 @@
 ---
 title: 'COVID-19 Confirmed Cases by Colorado County'
 author: 'Joseph Tuccillo, University of Colorado-Boulder Department of Geography'
-date: "27 June, 2020"
+date: "28 June, 2020"
 output: pdf_document
 ---
 
@@ -19,6 +19,10 @@ output: pdf_document
 ## [1] "esriGeometryPolygon"
 ```
 
+```
+## Error in rbind(deparse.level, ...): numbers of columns of arguments do not match
+```
+
 
 
 
@@ -33,13 +37,30 @@ output: pdf_document
 
 
 
+
+```
+## Error: Faceting variables must have at least one value
+```
+
 ![plot of chunk daily-cases-100k](figs/daily-cases-100k-1.pdf)
 
 ### Log-Transformed Cases per 100,000 People by County
 
+
+```
+## Error: Faceting variables must have at least one value
+```
+
 ![plot of chunk daily-cases-100k-log](figs/daily-cases-100k-log-1.pdf)
 
 
+```
+## Error: Faceting variables must have at least one value
+```
+
+```
+## Error: Faceting variables must have at least one value
+```
 
 
 \newpage
@@ -66,12 +87,15 @@ Use Affinity Propagation clustering to group daily reports of confirmed cases by
 
 
 
+```
+## Error in dimnames(x) <- dn: length of 'dimnames' [1] not equal to array extent
+```
 
 
 
 
 ```
-## Error in 1:ncol(ens): argument of length 0
+## Error in ncol(ens): object 'ens' not found
 ```
 
 ```
@@ -147,7 +171,7 @@ Use Affinity Propagation clustering to group daily reports of confirmed cases by
 ```
 
 ```
-## Error in FUN(X[[i]], ...): object 'cluster' not found
+## Error in FUN(X[[i]], ...): object 'cases_100k' not found
 ```
 
 ### Log-transformed Cases per 100,000 people by cluster
@@ -162,7 +186,7 @@ Use Affinity Propagation clustering to group daily reports of confirmed cases by
 ```
 
 ```
-## Error in FUN(X[[i]], ...): object 'cluster' not found
+## Error in FUN(X[[i]], ...): object 'cases_100k' not found
 ```
 
 ## Save New Data
