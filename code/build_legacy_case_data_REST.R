@@ -1,8 +1,9 @@
 # library(esri2sf)
 library(rjson)
+library(jsonlite)
 library(lubridate)
 source('code/support_functions.R')
-r
+
 ## REST API Connection
 # url <- 'https://services3.arcgis.com/66aUo8zsujfVXRIT/arcgis/rest/services/CDPHE_COVID19_CountyLevel_Open_Data_Repository/FeatureServer/0/'
 

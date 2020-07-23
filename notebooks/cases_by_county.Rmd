@@ -132,7 +132,7 @@ trjplt2 <- ggplot(data = daily_cases_cty_viz, aes(x = date, y = cases_100k, colo
 trjplt2
 ```
 
-```{r}
+```{r eval = F}
 ## write output images
 ggsave(plot = trjplt1, filename = 'daily-cases-raw.png', path = 'figs/', device = 'png', dpi = 320, width = 12, height = 12, units = 'in')
 ggsave(plot = trjplt2, filename = 'daily-cases-log.png', path = 'figs/', device = 'png', dpi = 320, width = 12, height = 12, units = 'in')
@@ -167,7 +167,6 @@ current_cases <- daily_cases_split[[length(daily_cases_split)]]
 excl <- current_cases$attribute[current_cases$cases_100k == 0]
 ```
 
-
 ```{r}
 # build cluster ensemble
 source('code/apcluster_helper.R')
@@ -197,7 +196,7 @@ ens <- sapply(4:length(daily_cases_split), function(i){
 })
 ```
 
-```{r eval = F}
+```{r eval = T}
 ## simple weights
 w <- 1:length(daily_cases_split) / length(daily_cases_split)
 ```
@@ -212,17 +211,25 @@ es <- lapply(1:ncol(ens), function(i){
     rownames(indmat) <- rownames(ens)
     d <- as.matrix(vegan::vegdist(indmat, method = 'jaccard'))
     s <- ifelse(d == 1, 0, 1)
-    # s * w[i]
-    # s * (1 + w[i])
+    # s <- s * w[i]
+    # s <- s * (1 + w[i])
     s
     
 })
 es <- Reduce(es, f = '+')
 ```
 
+```{r eval = F}
+library(smacof)
+source('../felis/code/smacof_helper.R')
+sm <- smacofSym.iter(d = 1-(es/max(es)), M = dim(es)[1]-1)
+```
+
+
 ```{r}
 set.seed(909) # so the labels stay consistent
 apce <- apcluster(es)
+# apce <- apcluster(negDistMat(sm$sm$conf))
 ```
 
 ```{r}
@@ -272,7 +279,6 @@ pal <- c(brewer.pal(length(unique(clust[clust != 'No Confirmed Cases'])), 'Set3'
 library(shadowtext)
 mapplot <- ggplot() + 
             geom_sf(data = counties, aes(fill = cluster), size = 0.25) +
-            # scale_fill_brewer(type = 'qual', palette = 'Set3') +
             scale_fill_manual(values = pal) +
             geom_shadowtext(data = county_labels, aes(x = X, y = Y, label = GEOID), color = 'white', size = 3, fontface = 'bold', stroke = 0.1) +
             ggtitle(label = 'Colorado COVID-19 Daily Confirmed Case Trajectories',
@@ -289,7 +295,6 @@ mapplot <- ggplot() +
 trjplot <- ggplot(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= '2020-03-19',],
             aes(x = date, y = cases_100k, color = cluster, group = attribute)) + 
           geom_line(size = 0.75) +
-          # scale_color_brewer(type = 'qual', palette = 'Set3') +
           scale_color_manual(values = pal) +
           geom_smooth(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= '2020-03-19',],
                       aes(x = date, y = cases_100k), inherit.aes = F, color = 'black', fill = NA,   
@@ -308,7 +313,6 @@ trjplot <- ggplot(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= '2020-0
 trjplot_log <- ggplot(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= '2020-03-19',],
                aes(x = date, y = cases_100k, color = cluster, group = attribute)) + 
           geom_line(size = 0.75) +
-          # scale_color_brewer(type = 'qual', palette = 'Set3') +
           scale_color_manual(values = pal) +
           geom_smooth(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= '2020-03-19',],
                       aes(x = date, y = cases_100k), inherit.aes = F, color = 'black', fill = NA,  
@@ -328,7 +332,7 @@ trjplot_log <- ggplot(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= '20
 ```{r county-clusters-raw, fig.height = 13, fig.width = 8}
 clsplt1 <- cowplot::plot_grid(mapplot, trjplot, ncol = 1)
 clsplt1
-ggsave(filename = 'county-clusters-raw.png', path = 'figs/', device = 'png', dpi = 320, width = 8, height = 13, units = 'in')
+# ggsave(filename = 'county-clusters-raw.png', path = 'figs/', device = 'png', dpi = 320, width = 8, height = 13, units = 'in')
 ```
 
 ### Log-transformed Cases per 100,000 people by cluster
@@ -336,7 +340,7 @@ ggsave(filename = 'county-clusters-raw.png', path = 'figs/', device = 'png', dpi
 ```{r county-clusters--log, fig.height = 13, fig.width = 8}
 clsplt2 <- cowplot::plot_grid(mapplot, trjplot_log, ncol = 1)
 clsplt2
-ggsave(filename = 'county-clusters-log.png', path = 'figs/', device = 'png', dpi = 320, width = 8, height = 13, units = 'in')
+# ggsave(filename = 'county-clusters-log.png', path = 'figs/', device = 'png', dpi = 320, width = 8, height = 13, units = 'in')
 ```
 
 ## Save New Data
