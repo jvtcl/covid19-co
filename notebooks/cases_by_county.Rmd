@@ -219,7 +219,7 @@ es <- lapply(1:ncol(ens), function(i){
 es <- Reduce(es, f = '+')
 ```
 
-```{r eval = F}
+```{r}
 library(smacof)
 source('../felis/code/smacof_helper.R')
 sm <- smacofSym.iter(d = 1-(es/max(es)), M = dim(es)[1]-1)
@@ -228,8 +228,8 @@ sm <- smacofSym.iter(d = 1-(es/max(es)), M = dim(es)[1]-1)
 
 ```{r}
 set.seed(909) # so the labels stay consistent
-apce <- apcluster(es)
-# apce <- apcluster(negDistMat(sm$sm$conf))
+# apce <- apcluster(es)
+apce <- apcluster(negDistMat(sm$sm$conf))
 ```
 
 ```{r}
