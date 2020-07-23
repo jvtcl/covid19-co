@@ -196,7 +196,7 @@ ens <- sapply(4:length(daily_cases_split), function(i){
 })
 ```
 
-```{r eval = T}
+```{r eval = F}
 ## simple weights
 w <- 1:length(daily_cases_split) / length(daily_cases_split)
 ```
