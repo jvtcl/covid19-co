@@ -1,7 +1,7 @@
 ---
 title: 'COVID-19 Confirmed Cases by Colorado County'
 author: 'Joseph Tuccillo, University of Colorado-Boulder Department of Geography'
-date: "26 July, 2020"
+date: "27 July, 2020"
 output: pdf_document
 ---
 
@@ -15,43 +15,51 @@ output: pdf_document
 
 
 ```
-## [1] "Feature Layer"
-## [1] "esriGeometryPolygon"
-```
-
-```
-## Error in rbind(deparse.level, ...): numbers of columns of arguments do not match
+## Error in daily_cases_cty$date: $ operator is invalid for atomic vectors
 ```
 
 
+```
+## Error in daily_cases_cty[complete.cases(daily_cases_cty), ]: incorrect number of dimensions
+```
 
 
 
 
 
 
+```
+## Error in daily_cases_cty$cases_100k: $ operator is invalid for atomic vectors
+```
 
 
 ### Raw Cases per 100,000 People by County
 
 
+```
+## Error in daily_cases_cty$date: $ operator is invalid for atomic vectors
+```
 
 
 
 ```
-## Error: Faceting variables must have at least one value
+## Error in ggplot(data = daily_cases_cty_viz, aes(x = date, y = cases_100k, : object 'daily_cases_cty_viz' not found
 ```
 
-![plot of chunk daily-cases-100k](figs/daily-cases-100k-1.pdf)
+```
+## Error in eval(expr, envir, enclos): object 'trjplt1' not found
+```
 
 ### Log-Transformed Cases per 100,000 People by County
 
 
 ```
-## Error: Faceting variables must have at least one value
+## Error in ggplot(data = daily_cases_cty_viz, aes(x = date, y = cases_100k, : object 'daily_cases_cty_viz' not found
 ```
 
-![plot of chunk daily-cases-100k-log](figs/daily-cases-100k-log-1.pdf)
+```
+## Error in eval(expr, envir, enclos): object 'trjplt2' not found
+```
 
 
 
@@ -75,12 +83,22 @@ Use Affinity Propagation clustering to group daily reports of confirmed cases by
 - Perform a final clustering (also using Affinity Propagation) to group the change trajectories from 3/19/2020 to present.
 
 
-
-
+```
+## Error in daily_cases_cty$date: $ operator is invalid for atomic vectors
+```
 
 
 ```
-## Error in dimnames(x) <- dn: length of 'dimnames' [1] not equal to array extent
+## Error in eval(expr, envir, enclos): object 'daily_cases_split' not found
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'current_cases' not found
+```
+
+
+```
+## Error in lapply(X = X, FUN = FUN, ...): object 'daily_cases_split' not found
 ```
 
 
@@ -123,6 +141,14 @@ Use Affinity Propagation clustering to group daily reports of confirmed cases by
 ```
 
 ```
+## Error in eval(expr, envir, enclos): object 'excl' not found
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'excl' not found
+```
+
+```
 ## Error in eval(expr, envir, enclos): object 'clust' not found
 ```
 
@@ -137,6 +163,13 @@ Use Affinity Propagation clustering to group daily reports of confirmed cases by
 ```
 
 
+```
+## Error in daily_cases_cty$attribute: $ operator is invalid for atomic vectors
+```
+
+```
+## Error in match(daily_cases_cty_viz$attribute, counties$NAME): object 'daily_cases_cty_viz' not found
+```
 
 
 
@@ -153,12 +186,12 @@ Use Affinity Propagation clustering to group daily reports of confirmed cases by
 
 
 ```
-## Error in is_missing(values): object 'pal' not found
+## Error in ggplot(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= : object 'daily_cases_cty_viz' not found
 ```
 
 
 ```
-## Error in is_missing(values): object 'pal' not found
+## Error in ggplot(data = daily_cases_cty_viz[daily_cases_cty_viz$date >= : object 'daily_cases_cty_viz' not found
 ```
 
 ### Raw Cases per 100,000 people by cluster
@@ -186,4 +219,19 @@ Use Affinity Propagation clustering to group daily reports of confirmed cases by
 ## Save New Data
 
 
+```
+## Error in daily_cases_cty$date: $ operator is invalid for atomic vectors
+```
+
+```
+## Error in file.path("data", "legacy", fnx): object 'fnx' not found
+```
+
+```
+## Error in -ncol(daily_cases_cty): invalid argument to unary operator
+```
+
+```
+## Error in save(daily_cases_cty, file = fnx): object 'fnx' not found
+```
 
