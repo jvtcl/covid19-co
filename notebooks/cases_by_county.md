@@ -1,7 +1,7 @@
 ---
 title: 'COVID-19 Confirmed Cases by Colorado County'
 author: 'Joseph Tuccillo, University of Colorado-Boulder Department of Geography'
-date: "09 February, 2021"
+date: "10 February, 2021"
 output: pdf_document
 ---
 
