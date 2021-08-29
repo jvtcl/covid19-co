@@ -26,15 +26,15 @@ jobs:
             git status
             git push https://${JOE_GITHUB_TOKEN}@github.com/jvtcl/covid19-co.git
             
-workflows:
-  version: 2.1
-  daily:
-    triggers:
-      - schedule:
-          cron: "10 22 * * *"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - build
+# workflows:
+#   version: 2.1
+#   daily:
+#     triggers:
+#       - schedule:
+#           cron: "10 22 * * *"
+#           filters:
+#             branches:
+#               only:
+#                 - master
+#     jobs:
+#       - build
